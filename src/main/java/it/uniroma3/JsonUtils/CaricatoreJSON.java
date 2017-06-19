@@ -28,8 +28,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.sf.jsqlparser.JSQLParserException;
-import test.FabbricatoreMappaStatement;
-import test.ParserSql;
+
 //testato e funzionante attenzione alle virgolette, che cambiano nel file
 public class CaricatoreJSON {
 	private Map<String,JsonObject> jsonCheMiServono;
