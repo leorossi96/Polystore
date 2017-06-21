@@ -28,14 +28,12 @@ public class GraphDao {
 //		this.graphDB.shutdown();
 //	}
 	
-	public ResultSet interroga(String query){
+	public ResultSet interroga(String query) throws SQLException{
 		Connection con = DataSourceNeo4j.getConnectio();
-		try (Statement stmt = con.createStatement()) {
+		 Statement stmt = con.createStatement();
 			ResultSet results = stmt.executeQuery(query);
 			return results;
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+
 	}
 	
 }

@@ -1,5 +1,6 @@
 package it.uniroma3.costruttoreQuery;
 
+import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +112,8 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 
 	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
 		GraphDao dao = new GraphDao();
-		Result risultatoResult = dao.interroga(queryRiscritta.toString());
-		JsonArray risultati = Convertitore.convertCypherToJSON(risultatoResult);
+		ResultSet risultatoResult = dao.interroga(queryRiscritta.toString());
+		JsonArray risultati = Convertitore.convertCypherToJson(risultatoResult);
 		return risultati;
 	}
 }

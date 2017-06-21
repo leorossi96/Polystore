@@ -1,17 +1,21 @@
 package it.uniroma3.costruttoreQuery;
 
+import java.sql.ResultSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import it.uniroma3.JsonUtils.Convertitore;
-import it.uniroma3.persistence.neo4j.GraphDao;
-import org.neo4j.graphdb.Result;
+import it.uniroma3.persistence.postgres.RelationalDao;
+
 
 public class CostruttoreQuerySQL implements CostruttoreQuery{
 
@@ -23,9 +27,10 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		queryRiscritta.append("SELECT * FROM\n");
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){
-			i++;
 			JsonArray risFiglio = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
+			mappaRisultati.remove(grafoPrioritaCompatto.getEdgeTarget(arco));
 			queryRiscritta.append("json_array_elements('"+risFiglio+"') AS elem"+i+",\n");
+			i++;
 			
 //			OPZIONE 1::: (USATA)
 //			
@@ -36,21 +41,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 //			  ) AS elem, customer 
 //			WHERE elem->>'customer_id' = customer.customer_id::text;
 
-			
-//			OPZIONE 2:::
-//			
-//			CREATE TEMP TABLE table_b(rental_id int, inventory_id int, customer_id int, staff_id int);
-//			INSERT INTO table_b VALUES
-//			  (1, 1, 1, 1)
-//			, (2, 2, 1, 2)
-//			, (3, 7, 2, 2)
-//			, (4, 8, 2, 2)
-//			, (5, 3, 3, 3)
-//			, (6, 4, 3, 3)
-//			, (7, 5, 4, 4)
-//			, (8, 6, 4, 4);
-//
-//			SELECT * FROM table_b b, customer c WHERE b.customer_id = c.customer_id;
 			
 		}
 		for(int z=0; z<nodo.size(); z++){
@@ -70,21 +60,40 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 					queryRiscritta.append("AND " + condizione.get(0) + " = " + condizione.get(1) +"\n");
 				else{
 					for(int k=0; k<i ;k++){ //se la condizione mi richiede di fare il join con uno dei risultati dei figli provo il join con tutti i figli e se non sono uguali i campi non mi aggiunge ennuple al risultato
-						queryRiscritta.append("AND " + condizione.get(0) + "::text = elem"+k+"->>'" + condizione.get(0).split("\\.")[1] +"\n");
+						queryRiscritta.append("AND " + condizione.get(0) + "::text = elem"+k+"->>'" + condizione.get(0).split("\\.")[1] +"'\n");
 					}
 				}
 			}
 		}
 		System.out.println("QUERY FINALE SQL : \n"+queryRiscritta.toString());
-		mappaRisultati.put(nodo, eseguiQueryDirettamente(queryRiscritta)); //da fare un flatten perchè il campo "value" contene il json risultato corrispondente
-		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+eseguiQueryDirettamente(queryRiscritta));
+		JsonArray risultati = eseguiQueryDirettamente(queryRiscritta);
+		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		mappaRisultati.put(nodo, risutatiFormaCorretta); //da fare un flatten perchè il campo "value" contene il json risultato corrispondente
+		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.getAsString());
 		
 	}
 	
+	private JsonArray pulisciRisultati(JsonArray ris) {
+			StringBuilder sb = new StringBuilder();
+            Iterator<JsonElement> iterator = ris.iterator();
+            while (iterator.hasNext()) {
+                    sb.append(iterator.next().toString());
+            }
+		
+    	
+		String risultati = sb.toString();
+		System.out.println("RISULTATI ="+risultati+"\n");
+		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"").replaceAll(Pattern.quote("{\"value\":\"{"), "{").replaceAll(Pattern.quote("}\""), "");
+		System.out.println("RISULTATI ="+r);
+//		String r2 = r.replaceAll(Pattern.quote(":[^\"]"), ":\"" ); 
+//		System.out.println("RISULTATI 4 ="+r4);
+		return new JsonParser().parse(r).getAsJsonArray();
+	}
+
 	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
-		GraphDao dao = new GraphDao();
-		Result risultatoResultSet = dao.interroga(queryRiscritta.toString());
-		JsonArray risultati = Convertitore.convertCypherToJSON(risultatoResultSet);
+		RelationalDao dao = new RelationalDao();
+		ResultSet risultatoResultSet = dao.interroga(queryRiscritta.toString());
+		JsonArray risultati = Convertitore.convertSQLToJson(risultatoResultSet);
 		return risultati;
 	}
 }
