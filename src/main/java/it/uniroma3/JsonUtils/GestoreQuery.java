@@ -21,7 +21,6 @@ public class GestoreQuery {
 
 	public void esegui(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati) throws Exception{
 		List<List<String>> foglie = getFoglie(grafoCopia);
-		int size = foglie.size();
 		if(foglie.size() == 0) //sono arrivato alla radice
 			return;
 		else{

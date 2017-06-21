@@ -19,10 +19,25 @@ import it.uniroma3.persistence.postgres.RelationalDao;
 
 public class CostruttoreQuerySQL implements CostruttoreQuery{
 
+	/**
+	 * Esempio di opzione utilizzata per iniettare JSON in query SQL
+
+		SELECT *
+		FROM   json_array_elements('[ {"rental_id" : 1,"inventory_id" : 1,"customer_id" : 1,"staff_id" : 1},
+			{"rental_id" : 2,"inventory_id" : 2,"customer_id" : 1,"staff_id" : 2},
+			{"rental_id" : 3,"inventory_id" : 7,"customer_id" : 2,"staff_id" : 2},
+			{"rental_id" : 4,"inventory_id" : 8,"customer_id" : 2,"staff_id" : 2},
+			{"rental_id" : 5,"inventory_id" : 3,"customer_id" : 3,"staff_id" : 3},
+			{"rental_id" : 6,"inventory_id" : 4,"customer_id" : 3,"staff_id" : 3},
+			{"rental_id" : 7,"inventory_id" : 5,"customer_id" : 4,"staff_id" : 4},
+			{"rental_id" : 8,"inventory_id" : 6,"customer_id" : 4,"staff_id" : 4}]') 
+			AS elem, customer 
+		WHERE elem->>'customer_id' = customer.customer_id::text;
+	 */
 	@Override
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo,
 			Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
-		
+
 		StringBuilder queryRiscritta = new StringBuilder();
 		queryRiscritta.append("SELECT * FROM\n");
 		int i = 0; //contatore di risultati con cui fare join
@@ -31,17 +46,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			mappaRisultati.remove(grafoPrioritaCompatto.getEdgeTarget(arco));
 			queryRiscritta.append("json_array_elements('"+risFiglio+"') AS elem"+i+",\n");
 			i++;
-			
-//			OPZIONE 1::: (USATA)
-//			
-//			SELECT *
-//			FROM   json_array_elements(
-//			  '[ {     "rental_id" : 1,     "inventory_id" : 1,     "customer_id" : 1,     "staff_id" : 1   }, {     "rental_id" : 2,     "inventory_id" : 2,     "customer_id" : 1,     "staff_id" : 2   },{     "rental_id" : 3,     "inventory_id" : 7,     "customer_id" : 2,     "staff_id" : 2   },{     "rental_id" : 4,     "inventory_id" : 8,     "customer_id" : 2,     "staff_id" : 2   },{     "rental_id" : 5,     "inventory_id" : 3,     "customer_id" : 3,     "staff_id" : 3   }, {     "rental_id" : 6,     "inventory_id" : 4,     "customer_id" : 3,     "staff_id" : 3   },{     "rental_id" : 7,     "inventory_id" : 5,     "customer_id" : 4,     "staff_id" : 4   },{     "rental_id" : 8,     "inventory_id" : 6,     "customer_id" : 4,     "staff_id" : 4   }]
-//			'
-//			  ) AS elem, customer 
-//			WHERE elem->>'customer_id' = customer.customer_id::text;
-
-			
 		}
 		for(int z=0; z<nodo.size(); z++){
 			String tabella = nodo.get(z);
@@ -50,7 +54,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			else
 				queryRiscritta.append(tabella+",\n");
 		}
-		
 		queryRiscritta.append("WHERE\n1=1\n");
 		for (String tabella: nodo){
 			List<List<String>> condizioniTabella = mappaWhere.get(tabella);
@@ -70,23 +73,23 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta); //da fare un flatten perchè il campo "value" contene il json risultato corrispondente
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.getAsString());
-		
+
 	}
-	
+
 	private JsonArray pulisciRisultati(JsonArray ris) {
-			StringBuilder sb = new StringBuilder();
-            Iterator<JsonElement> iterator = ris.iterator();
-            while (iterator.hasNext()) {
-                    sb.append(iterator.next().toString());
-            }
-		
-    	
+		StringBuilder sb = new StringBuilder();
+		Iterator<JsonElement> iterator = ris.iterator();
+		while (iterator.hasNext()) {
+			sb.append(iterator.next().toString());
+		}
 		String risultati = sb.toString();
 		System.out.println("RISULTATI ="+risultati+"\n");
-		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"").replaceAll(Pattern.quote("{\"value\":\"{"), "{").replaceAll(Pattern.quote("}\""), "");
+		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"")
+				.replaceAll(Pattern.quote("{\"value\":\"{"), "{")
+				.replaceAll(Pattern.quote("}\""), "");
 		System.out.println("RISULTATI ="+r);
-//		String r2 = r.replaceAll(Pattern.quote(":[^\"]"), ":\"" ); 
-//		System.out.println("RISULTATI 4 ="+r4);
+		//		String r2 = r.replaceAll(Pattern.quote(":[^\"]"), ":\"" ); 
+		//		System.out.println("RISULTATI 4 ="+r4);
 		return new JsonParser().parse(r).getAsJsonArray();
 	}
 

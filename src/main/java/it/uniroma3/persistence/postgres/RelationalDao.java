@@ -1,26 +1,16 @@
 package it.uniroma3.persistence.postgres;
 
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 public class RelationalDao {
-	private DataSourcePostgres dataSource;
 
-	public RelationalDao() {
-		this.dataSource = new DataSourcePostgres();
-	}
-
-	public ResultSet interroga(String querySQL) throws SQLException {
-		Connection connection = this.dataSource.getConnection();
-		ResultSet result;
+	public ResultSet interroga(String querySQL) throws SQLException, ClassNotFoundException {
+		Connection connection = DataSourcePostgres.getConnection();
 		Statement statement = connection.createStatement();
-		result = statement.executeQuery(querySQL);
-
+		ResultSet result = statement.executeQuery(querySQL);
 		return result;
 	}
-
 }

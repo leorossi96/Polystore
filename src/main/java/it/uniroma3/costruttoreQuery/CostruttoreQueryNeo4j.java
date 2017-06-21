@@ -7,8 +7,6 @@ import java.util.Map;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
-import org.neo4j.graphdb.Result;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
@@ -106,9 +104,6 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 
 		}
 	}
-
-
-
 
 	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
 		GraphDao dao = new GraphDao();
