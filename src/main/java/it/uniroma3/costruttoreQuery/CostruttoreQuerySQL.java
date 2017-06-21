@@ -1,6 +1,5 @@
 package it.uniroma3.costruttoreQuery;
 
-import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,8 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import com.google.gson.JsonArray;
 
 import it.uniroma3.JsonUtils.Convertitore;
-import it.uniroma3.persistence.postgres.RelationalDao;
+import it.uniroma3.persistence.neo4j.GraphDao;
+import org.neo4j.graphdb.Result;
 
 public class CostruttoreQuerySQL implements CostruttoreQuery{
 
@@ -69,9 +69,8 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 				if(nodo.contains(condizione.get(1).split("\\.")[0])) //se la condizione è interna al nodo
 					queryRiscritta.append("AND " + condizione.get(0) + " = " + condizione.get(1) +"\n");
 				else{
-					while(i > 0){ //se la condizione mi richiede di fare il join con uno dei risultati dei figli provo il join con tutti i figli e se non sono uguali i campi non mi aggiunge ennuple al risultato
-						queryRiscritta.append("AND " + condizione.get(0) + "::text = elem"+i+"->>'" + condizione.get(0).split("\\.")[1] +"\n");
-						i--;
+					for(int k=0; k<i ;k++){ //se la condizione mi richiede di fare il join con uno dei risultati dei figli provo il join con tutti i figli e se non sono uguali i campi non mi aggiunge ennuple al risultato
+						queryRiscritta.append("AND " + condizione.get(0) + "::text = elem"+k+"->>'" + condizione.get(0).split("\\.")[1] +"\n");
 					}
 				}
 			}
@@ -83,9 +82,9 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 	}
 	
 	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
-		RelationalDao dao = new RelationalDao();
-		ResultSet risultatoResultSet = dao.interroga(queryRiscritta.toString());
-		JsonArray risultati = Convertitore.convertSQLToJSON(risultatoResultSet);
+		GraphDao dao = new GraphDao();
+		Result risultatoResultSet = dao.interroga(queryRiscritta.toString());
+		JsonArray risultati = Convertitore.convertCypherToJSON(risultatoResultSet);
 		return risultati;
 	}
 }

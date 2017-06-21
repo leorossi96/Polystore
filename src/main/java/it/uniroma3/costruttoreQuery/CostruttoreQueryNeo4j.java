@@ -33,6 +33,10 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		queryRiscritta.append("MATCH ("+tabellaPartenza+" : "+tabellaPartenza+")\n");
 		for(int i=0; i<nodo.size(); i++){
 			List<List<String>> condizioniTabella = mappaWhere.get(nodo.get(i));
+			if (condizioniTabella.size() == 0)	{
+				queryRiscritta.append("RETURN "+tabellaPartenza);
+			}
+
 			for(int j=0; i<condizioniTabella.size(); j++){
 				List<String> condizione = condizioniTabella.get(j);
 				String primaParolaParametro = condizione.get(1).split("\\.")[0];
@@ -88,13 +92,17 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 						}
 					}
 				}
-
-				//3
-				mappaRisultati.put(nodo, eseguiQueryDirettamente(queryRiscritta));
-				//4
-				queryDelete.append("MATCH (n : risultato)\nDETACH DELETE n"); //cancella i nodi risultato e i relativi collegamenti
-				eseguiQueryDirettamente(queryDelete);
 			}
+			System.out.println("QUERY NEO4J ="+queryRiscritta.toString());
+
+			//3
+			mappaRisultati.put(nodo, eseguiQueryDirettamente(queryRiscritta));
+			//4
+			//				queryDelete.append("MATCH (n : risultato)\nDETACH DELETE n");//cancella i nodi risultato e i relativi collegamenti
+			//				System.out.println("QUERY NEO4J ="+queryRiscritta.toString());
+			//				eseguiQueryDirettamente(queryDelete);
+			//				
+
 		}
 	}
 

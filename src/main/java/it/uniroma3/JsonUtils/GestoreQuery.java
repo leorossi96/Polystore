@@ -1,5 +1,6 @@
 package it.uniroma3.JsonUtils;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -20,15 +21,20 @@ public class GestoreQuery {
 
 	public void esegui(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati) throws Exception{
 		List<List<String>> foglie = getFoglie(grafoCopia);
-		if(foglie.size() == grafoCopia.vertexSet().size()) //sono arrivato alla radice
+		int size = foglie.size();
+		if(foglie.size() == 0) //sono arrivato alla radice
 			return;
-		else
-			for(List<String> foglia : foglie){
+		else{
+			Iterator<List<String>> i = foglie.iterator();
+			while(i.hasNext()){
+				List<String> foglia = i.next();
 				eseguiQuery(grafoPrioritaCompatto, foglia, jsonUtili, mappaWhere, mappaRisultati, grafoPriorita);
 				//aggiornaWeights(grafoPrioritaCompatto, mappaWeights, mappaRisultati, foglia) devo avere coma parametro di esegui mappaWeights
-				grafoCopia.removeAllEdges(grafoCopia.incomingEdgesOf(foglia));
+//				grafoCopia.removeAllEdges(grafoCopia.incomingEdgesOf(foglia));
 				grafoCopia.removeVertex(foglia);
 			}
+		}
+		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
 		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaRisultati);
 	}
 
@@ -36,11 +42,11 @@ public class GestoreQuery {
 			Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 		CostruttoreQuery costruttoreQuery = null;
 		JsonObject myJson = jsonUtili.get(nodo.get(0)).getAsJsonObject();
-				if(myJson.get("database").getAsString().equals("postgreSQL"))
+		if(myJson.get("database").getAsString().equalsIgnoreCase("postgreSQL"))
 		            costruttoreQuery = new CostruttoreQuerySQL();
-				if(myJson.get("database").getAsString().equals("mongoDB"))
+				if(myJson.get("database").getAsString().equalsIgnoreCase("mongoDB"))
 					costruttoreQuery = new CostruttoreQueryMongo();
-				if(myJson.get("database").getAsString().equals("neo4J"))
+				if(myJson.get("database").getAsString().equalsIgnoreCase("neo4j"))
 					costruttoreQuery = new CostruttoreQueryNeo4j();
 		costruttoreQuery.eseguiQuery(grafoPrioritaCompatto, nodo, mappaWhere, mappaRisultati, grafoPriorita);
 

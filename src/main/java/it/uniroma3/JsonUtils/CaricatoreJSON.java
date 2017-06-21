@@ -33,7 +33,7 @@ import net.sf.jsqlparser.JSQLParserException;
 public class CaricatoreJSON {
 	private Map<String,JsonObject> jsonCheMiServono;
 
-	private CaricatoreJSON() {
+	public CaricatoreJSON() {
 		this.jsonCheMiServono = new HashMap<String, JsonObject>();
 		
 	}
@@ -376,7 +376,7 @@ public class CaricatoreJSON {
 	
 
 	public static void main (String[] args) throws Exception{
-		String querySQL = "SELECT * FROM address, payment, rental, customer, city, country WHERE payment.rental_id = rental.rental_id AND address.city_id = city.city_id AND city.country_id = country.country_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND customer.last_name = 'Rossi'"; 
+		String querySQL = "SELECT * FROM address, store WHERE address.address_id = store.address_id"; 
 
 		ParserSql parser = new ParserSql();
 		parser.spezza(querySQL);//spezzo la query

@@ -1,6 +1,7 @@
 package it.uniroma3.JsonUtils;
 
 import java.sql.ResultSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.neo4j.graphdb.Result;
@@ -29,20 +30,44 @@ public class Convertitore {
 		}
 		return jsonArray;
 	}
+
+//	/**
+//	 * Converte il Result della query Cypher in jsonArray
+//	 */
+//	public static JsonArray convertCypherToJSON(Result result) throws Exception {
+//		JsonArray jsonArray = new JsonArray();
+//		while ( result.hasNext() ) {
+//			Map<String, Object> row = result.next();
+//			System.out.println("\n\nROW = "+row.toString()+"\n\n");
+//			JsonObject obj = new JsonObject();
+//			for ( String key : result.columns()){
+//				System.out.println("KEY = "+key);
+//				System.out.println("row.get(key).toString() = "+ row.get(key).toString());
+//				obj.addProperty(key,row.get(key).toString());
+//			}
+//			jsonArray.add(obj);
+//
+//		}
+//		return jsonArray;
+//	}
 	
-	/**
-	 * Converte il Result della query Cypher in jsonArray
-	 */
 	public static JsonArray convertCypherToJSON(Result result) throws Exception {
 		JsonArray jsonArray = new JsonArray();
 		while ( result.hasNext() ) {
-        	Map<String, Object> row = result.next();
-        	JsonObject obj = new JsonObject();
-            for ( String key : result.columns() )
-            { obj.addProperty(key,row.get(key).toString());
-            }
-            jsonArray.add(obj);
-        }
+
+
+			Map<String, Object> row = result.next();
+			JsonObject obj = new JsonObject();
+			StringBuilder ennupla = new StringBuilder();
+			for ( String key : result.columns() ) {
+				Iterator i = result.columnAs(key);
+				while (i.hasNext())	{
+					ennupla.append(i.toString());
+				}
+				obj.addProperty(key,ennupla.toString());
+			}
+			jsonArray.add(obj);
+		}
 		return jsonArray;
 	}
 
