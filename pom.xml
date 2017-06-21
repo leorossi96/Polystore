@@ -79,6 +79,11 @@
 			<artifactId>jgrapht-core</artifactId>
 			<version>1.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.neo4j</groupId>
+			<artifactId>neo4j-jdbc-driver</artifactId>
+			<version>3.1.0</version>
+		</dependency>
 
 	</dependencies>
 	<build>
