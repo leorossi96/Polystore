@@ -1,5 +1,6 @@
 package it.uniroma3.costruttoreQuery;
 
+import java.io.StringReader;
 import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
@@ -9,9 +10,13 @@ import java.util.regex.Pattern;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 
 import it.uniroma3.JsonUtils.Convertitore;
 import it.uniroma3.persistence.postgres.RelationalDao;
@@ -72,7 +77,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		JsonArray risultati = eseguiQueryDirettamente(queryRiscritta);
 		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta); //da fare un flatten perchè il campo "value" contene il json risultato corrispondente
-		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.getAsString());
+		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
 
@@ -89,8 +94,12 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 				.replaceAll(Pattern.quote("}\""), "")
 				.replaceAll(":([^\"].*?),", ":\"$1\",")
 				.replaceAll(Pattern.quote("}{"), "},{");
-		System.out.println("RISULTATI ="+r); 
-		return new JsonParser().parse(r).getAsJsonArray();
+		String r2 = "["+r+"]";
+		System.out.println("RISULTATI ="+r2); 
+		StringReader s = new StringReader(r2);
+		JsonReader j = new JsonReader(s);
+		j.setLenient(true);
+		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
 	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{

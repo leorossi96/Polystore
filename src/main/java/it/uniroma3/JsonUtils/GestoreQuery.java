@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -34,6 +35,8 @@ public class GestoreQuery {
 			}
 		}
 		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
+//		mappaRisultati.toString().replaceAll(Pattern.quote("{\"store\":\"{"), "{");
+//		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
 		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaRisultati);
 	}
 
