@@ -89,7 +89,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 				.replaceAll(Pattern.quote("}\""), "")
 				.replaceAll(":([^\"].*?),", ":\"$1\",")
 				.replaceAll(Pattern.quote("}{"), "},{");
-		System.out.println("RISULTATI ="+r);
+		System.out.println("RISULTATI ="+r); 
 		return new JsonParser().parse(r).getAsJsonArray();
 	}
 
