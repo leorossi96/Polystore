@@ -86,10 +86,10 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		System.out.println("RISULTATI ="+risultati+"\n");
 		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"")
 				.replaceAll(Pattern.quote("{\"value\":\"{"), "{")
-				.replaceAll(Pattern.quote("}\""), "");
+				.replaceAll(Pattern.quote("}\""), "")
+				.replaceAll(":([^\"].*?),", ":\"$1\",")
+				.replaceAll(Pattern.quote("}{"), "},{");
 		System.out.println("RISULTATI ="+r);
-		//		String r2 = r.replaceAll(Pattern.quote(":[^\"]"), ":\"" ); 
-		//		System.out.println("RISULTATI 4 ="+r4);
 		return new JsonParser().parse(r).getAsJsonArray();
 	}
 
