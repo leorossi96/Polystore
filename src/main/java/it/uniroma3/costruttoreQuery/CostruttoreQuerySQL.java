@@ -5,16 +5,14 @@ import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
@@ -43,8 +41,12 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo,
 			Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 
+		String campoSelect = this.getForeingKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
+		if(campoSelect == null)
+			campoSelect = "*";
+		
 		StringBuilder queryRiscritta = new StringBuilder();
-		queryRiscritta.append("SELECT * FROM\n");
+		queryRiscritta.append("SELECT "+nodo.get(0)+"."+campoSelect+" FROM\n");
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){
 			JsonArray risFiglio = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
@@ -81,6 +83,23 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 
 	}
 
+	/**
+	 * 
+	 * @return La chiave esterna sulla quale il nodo padre effettua il join. Null altrimenti.
+	 */
+	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
+		String padre = null;
+		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
+			padre = grafoPriorita.getEdgeSource(arco);
+		}
+		for(List<String> condizioni : mappaWhere.get(padre)){
+			StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
+			if(st.nextToken().equals(nodo))
+				return st.nextToken();
+		}
+		return null;
+	}
+
 	private JsonArray pulisciRisultati(JsonArray ris) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<JsonElement> iterator = ris.iterator();
@@ -109,3 +128,4 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		return risultati;
 	}
 }
+;
