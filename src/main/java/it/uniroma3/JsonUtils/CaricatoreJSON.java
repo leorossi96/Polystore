@@ -376,7 +376,7 @@ public class CaricatoreJSON {
 	
 
 	public static void main (String[] args) throws Exception{
-		String querySQL = "SELECT * FROM address, store WHERE store.address_id = address.address_id AND address.address_id = 4"; 
+		String querySQL = "SELECT * FROM address, store WHERE address.address_id = store.address_id AND store.address_id = 4"; 
 
 		ParserSql parser = new ParserSql();
 		parser.spezza(querySQL);//spezzo la query

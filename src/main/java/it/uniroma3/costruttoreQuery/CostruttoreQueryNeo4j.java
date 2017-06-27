@@ -159,7 +159,8 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 				else if(!mappaWhere.keySet().contains(primaParolaParametro))
 					queryRiscritta.append("WHERE "+condizione.get(0)+" = "+condizione.get(1)+"\n");
 				else {
-					queryRiscritta.append("WHERE "+condizione.get(0)+" IN "+mappaArrayFkFigli.get(condizione.get(1).toString())+"\n");
+					if(!this.condizioneStringente(mappaWhere, nodo.get(i), condizione.get(0)))
+						queryRiscritta.append("WHERE "+condizione.get(0)+" IN "+mappaArrayFkFigli.get(condizione.get(1).toString())+"\n");
 					//						nodiCandidatiPerJoinConRisultati.add(nodo.get(i)+","+condizione.get(1));  //[(customer,address.address_id)]
 				}
 			}
@@ -187,10 +188,28 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		System.out.println("QUERY NEO4J =\n"+ queryRiscritta.toString());
 
 
-		JsonArray risultati = eseguiQueryDirettamente(queryRiscritta);
+		JsonArray risultati = eseguiQueryDirettamente(queryRiscritta, campoReturn);
 		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);		
 
+	}
+
+
+
+	private boolean condizioneStringente(Map<String, List<List<String>>> mappaWhere, String tabellaCorrente, String valoreCondizione) {
+		boolean piùStringente = false;
+		List<List<String>> condizioniTabella = mappaWhere.get(tabellaCorrente);
+		for(int i=0; i<condizioniTabella.size(); i++){
+			List<String> condizione = condizioniTabella.get(i);
+			if(condizione.get(0).equals(valoreCondizione)){
+				String primaParolaParametro = condizione.get(1).split("\\.")[0];
+				if(!mappaWhere.keySet().contains(primaParolaParametro)){
+					piùStringente = true;
+					return piùStringente;
+				}
+			}
+		}
+		return piùStringente;
 	}
 
 
@@ -231,10 +250,10 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
-	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
+	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta, String campoReturn) throws Exception{
 		GraphDao dao = new GraphDao();
 		ResultSet risultatoResult = dao.interroga(queryRiscritta.toString());
-		JsonArray risultati = Convertitore.convertCypherToJson(risultatoResult);
+		JsonArray risultati = Convertitore.convertCypherToJson(risultatoResult, campoReturn);
 		return risultati;
 	}
 }
