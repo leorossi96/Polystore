@@ -50,9 +50,10 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		StringBuilder queryRiscritta = new StringBuilder();
 		if(campoSelect == null){
 			campoSelect = "*";
-			queryRiscritta.append("SELECT "+nodo.get(0)+"."+campoSelect+"\nFROM\n");
-		}else
 			queryRiscritta.append("SELECT *\nFROM\n");
+		}else
+			queryRiscritta.append("SELECT "+nodo.get(0)+"."+campoSelect+"\nFROM\n");
+
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){
 			JsonArray risFiglio = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
