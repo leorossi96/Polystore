@@ -47,11 +47,12 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 
 		String campoSelect = this.getForeingKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
-		if(campoSelect == null)
-			campoSelect = "*";
-		
 		StringBuilder queryRiscritta = new StringBuilder();
-		queryRiscritta.append("SELECT "+nodo.get(0)+"."+campoSelect+"\nFROM\n");
+		if(campoSelect == null){
+			campoSelect = "*";
+			queryRiscritta.append("SELECT "+nodo.get(0)+"."+campoSelect+"\nFROM\n");
+		}else
+			queryRiscritta.append("SELECT *\nFROM\n");
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){
 			JsonArray risFiglio = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
@@ -89,23 +90,38 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
-	
+
 	/**
 	 * 
 	 * @return La chiave esterna sulla quale il nodo padre effettua il join. Null altrimenti.
 	 */
+	//	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
+	//		String padre = null;
+	//		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
+	//			padre = grafoPriorita.getEdgeSource(arco);
+	//		}
+	//		for(List<String> condizioni : mappaWhere.get(padre)){
+	//			StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
+	//			if(st.nextToken().equals(nodo))
+	//				return st.nextToken();
+	//		}
+	//		return null;
+	//	}
 	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
 		String padre = null;
 		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
 			padre = grafoPriorita.getEdgeSource(arco);
 		}
-		for(List<String> condizioni : mappaWhere.get(padre)){
-			StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
-			if(st.nextToken().equals(nodo))
-				return st.nextToken();
+		if(padre != null){
+			for(List<String> condizioni : mappaWhere.get(padre)){
+				StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
+				if(st.nextToken().equals(nodo))
+					return condizioni.get(1);
+			}
 		}
 		return null;
 	}
+
 
 	private JsonArray pulisciRisultati(JsonArray ris) {
 		StringBuilder sb = new StringBuilder();

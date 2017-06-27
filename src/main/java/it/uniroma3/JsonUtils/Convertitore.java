@@ -9,7 +9,7 @@ import com.google.gson.JsonParser;
 
 public class Convertitore {
 
-	public static JsonArray convertCypherToJson(ResultSet resultSet) throws Exception {
+	public static JsonArray convertCypherToJson(ResultSet resultSet, String campoReturn) throws Exception {
 		JsonArray jsonArray = new JsonArray();
 		JsonParser parser = new JsonParser();
 
@@ -17,14 +17,21 @@ public class Convertitore {
 			int total_rows = resultSet.getMetaData().getColumnCount();
 			JsonObject obj = null;
 			for (int i = 0; i < total_rows; i++) {
-				obj = (JsonObject) parser.parse(resultSet.getObject(i + 1).toString());
+				if(campoReturn != null){//è un nodo figlio e mi ritorna solo valori numerici di fk quindi va parsato e costruito il risultato in un altro modo
+					System.out.println("PROVA = "+"{\""+campoReturn.split("\\.")[1]+"\": "+resultSet.getObject(i + 1).toString()+"}");
+					obj = (JsonObject) parser.parse("{\""+campoReturn.split("\\.")[1]+"\": "+resultSet.getObject(i + 1).toString()+"}");
+				}
+				else{
+					System.out.println("PROVA = "+parser.parse(resultSet.getObject(i + 1).toString()));
+					obj = (JsonObject) parser.parse(resultSet.getObject(i + 1).toString());
+				}
 				jsonArray.add(obj);
 				//				obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getObject(i + 1).toString());
 			}
 		}
 		return jsonArray;
 	}
-	
+
 	public static JsonArray convertSQLToJson(ResultSet resultSet) throws Exception {
 		JsonArray jsonArray = new JsonArray();
 		while (resultSet.next()) {
