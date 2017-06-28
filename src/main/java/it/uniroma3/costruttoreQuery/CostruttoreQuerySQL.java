@@ -79,8 +79,9 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 				}
 			}
 		}
-		System.out.println("QUERY FINALE SQL : \n"+queryRiscritta.toString());
-		JsonArray risultati = eseguiQueryDirettamente(queryRiscritta);
+		String querySQL = queryRiscritta.toString();
+		System.out.println("QUERY FINALE SQL : \n"+querySQL);
+		JsonArray risultati = eseguiQueryDirettamente(querySQL);
 		System.out.println("RISULTATI NON PULITI: "+risultati.toString());
 		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
@@ -125,8 +126,8 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
-	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
-		ResultSet risultatoResultSet = new RelationalDao().interroga(queryRiscritta.toString());
+	private JsonArray eseguiQueryDirettamente(String query) throws Exception{
+		ResultSet risultatoResultSet = new RelationalDao().interroga(query);
 		JsonArray risultati = Convertitore.convertSQLToJson(risultatoResultSet);
 		return risultati;
 	}

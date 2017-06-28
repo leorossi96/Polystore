@@ -13,12 +13,12 @@ public class DataSourceMongo {
 	private static final String PWD = "password"; 
 	private static Connection ISTANCE = null;
 
-	public static Connection getConnectio()  {
+	public static Connection getConnectio() throws ClassNotFoundException  {
 		if(ISTANCE == null) {
 			try {
 				Class.forName(DRIVER_NAME);
 				ISTANCE = DriverManager.getConnection(URL, USER_ID, PWD);
-			} catch (ClassNotFoundException | SQLException e) {
+			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
 		}
