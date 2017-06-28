@@ -21,12 +21,13 @@ public class ParserNeo4j implements QueryParser{
 	private List<String> listaProiezioni;
 	private List<String> tableList;
 	private List<List<String>> matriceWhere;
-	
+
+
 	@Override
-	public void spezza(String cypherQuery) throws Exception{	
+	public void spezza(String cypherQuery) throws JSQLParserException, FileNotFoundException{	
 		//creo la lista from
 		this.tableList = new LinkedList<>(); 
-		File fileJSON = new File("/Users/micheletedesco1/Desktop/fileJSON.txt");
+		File fileJSON = new File("/Users/leorossi/Desktop/fileJSON.txt");
 		Scanner scanner = new Scanner(fileJSON);
 		//{'table' : 'persona', 'database' : 'postgerSQL', 'members':['persona.id', 'persona.nome', 'persona.scuola'] 'query' : 'SELECT * FROM persona WHERE 1=1'}
 		//{'table' : 'scuola', 'database' : 'mongoDB', 'members':['scuola.id', 'scuola.nome'] }
@@ -40,44 +41,47 @@ public class ParserNeo4j implements QueryParser{
 		}
 
 		scanner.close();
-		System.out.println(tableList.toString());
-		
+		System.out.println("Parser Neo4j lista tabelle = "+tableList.toString());
+
 		//creo la listaWhere
 		this.matriceWhere = new LinkedList<>();
 		String[] parti = cypherQuery.split(" WHERE ");
 		String[] parti2 = parti[1].split(" RETURN ");
-		
+
 		String oggettoStringaWhere = parti2[0];
 		String[] oggettiStatement = oggettoStringaWhere.split(" AND ");
-    	for (int i=0; i<oggettiStatement.length; i++){
-    		String[] oggettiStatementSeparati = oggettiStatement[i].split("=");
-    		List<String> rigaMatrice = new LinkedList<>();
-    		rigaMatrice.add(oggettiStatementSeparati[0].replaceAll("\\s+","")); //st = st.replaceAll("\\s+","")
-    		oggettiStatementSeparati[1] = oggettiStatementSeparati[1].replaceFirst("\\s+","");
-    		if (oggettiStatementSeparati[1].endsWith(" ")){
+		for (int i=0; i<oggettiStatement.length; i++){
+			String[] oggettiStatementSeparati = oggettiStatement[i].split("=");
+			List<String> rigaMatrice = new LinkedList<>();
+			rigaMatrice.add(oggettiStatementSeparati[0].replaceAll("\\s+","")); //st = st.replaceAll("\\s+","")
+			oggettiStatementSeparati[1] = oggettiStatementSeparati[1].replaceFirst("\\s+","");
+			if (oggettiStatementSeparati[1].endsWith(" ")){
 				oggettiStatementSeparati[1] = oggettiStatementSeparati[1].substring(0,oggettiStatementSeparati[1].length() - 1);
-				}
-    		rigaMatrice.add(oggettiStatementSeparati[1]);
-    		this.matriceWhere.add(rigaMatrice);			 		
-    	} 	
-    	
-    	//creo la listaSelect
-    	this.listaProiezioni = new LinkedList<>();
-    	String oggettoStringaReturn = parti2[1];
-        String[] partiReturn = oggettoStringaReturn.split("\\,");
-        for (int i=0; i<partiReturn.length; i++){
-        	this.listaProiezioni.add(partiReturn[i]);
-        }
-        
-		
-		
-		
-		
-		
-		
-		
-	}
+			}
+			rigaMatrice.add(oggettiStatementSeparati[1]);
+			this.matriceWhere.add(rigaMatrice);	
+			System.out.println("\n\nNEO4J MATRICE WHERE =\n"+matriceWhere.toString()+"\n\n");
+		} 	
 
+		//creo la listaSelect
+		this.listaProiezioni = new LinkedList<>();
+		if (cypherQuery.contains(" Return ") || cypherQuery.contains(" RETURN ")){
+			String oggettoStringaReturn = parti2[1];
+			String[] partiReturn = oggettoStringaReturn.split("\\,");
+			for (int i=0; i<partiReturn.length; i++){
+				this.listaProiezioni.add(partiReturn[i]);
+			}
+		}
+
+
+
+
+
+
+
+
+	}
+	
 	public List<String> getListaProiezioni() {
 		return listaProiezioni;
 	}
@@ -85,7 +89,6 @@ public class ParserNeo4j implements QueryParser{
 	public void setListaProiezioni(List<String> listaProiezioni) {
 		this.listaProiezioni = listaProiezioni;
 	}
-	
 	@Override
 	public List<String> getTableList() {
 		return tableList;
@@ -94,15 +97,17 @@ public class ParserNeo4j implements QueryParser{
 	public void setTableList(List<String> listaFrom) {
 		this.tableList = listaFrom;
 	}
+	
 	@Override
 	public List<List<String>> getMatriceWhere() {
 		return matriceWhere;
 	}
+
 	@Override
 	public void setMatriceWhere(List<List<String>> matriceWhere) {
 		this.matriceWhere = matriceWhere;
 	}
-	
+
 	public static void main(String[] args) throws FileNotFoundException, JSQLParserException {
 		String cypherQuery = "MATCH (c:customer), (i:inventory), (r:rental) WHERE c.costumer_id = i.inventory_id AND r.inventory_id = i.inventory_id AND customer.last_name = 'Rossi'";
 		ParserNeo4j parserNeo4j = new ParserNeo4j();

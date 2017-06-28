@@ -11,11 +11,8 @@ import java.util.regex.Pattern;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
@@ -44,7 +41,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo,
 			Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 
-
 		String campoSelect = this.getForeingKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		StringBuilder queryRiscritta = new StringBuilder();
@@ -52,8 +48,8 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			campoSelect = "*";
 			queryRiscritta.append("SELECT *\nFROM\n");
 		}else
-			queryRiscritta.append("SELECT "+nodo.get(0)+"."+campoSelect+"\nFROM\n");
- 
+			queryRiscritta.append("SELECT "+campoSelect+"\nFROM\n");
+
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){
 			JsonArray risFiglio = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
@@ -77,7 +73,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 				if(nodo.contains(primaParolaParametro) || !mappaWhere.keySet().contains(primaParolaParametro)) //se la condizione è interna al nodo
 					queryRiscritta.append("AND " + condizione.get(0) + " = " + condizione.get(1) +"\n");
 				else{
-					for(int k=0; k<i ;k++){ //se la condizione mi richiede di fare il join con uno dei risultati dei figli provo il join con tutti i figli e se non sono uguali i campi non mi aggiunge ennuple al risultato
+					for(int k=0; k<i ;k++){ 
 						queryRiscritta.append("AND " + condizione.get(0) + "::text = elem"+k+"->>'" + condizione.get(0).split("\\.")[1] +"'\n");
 					}
 				}
@@ -87,7 +83,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		JsonArray risultati = eseguiQueryDirettamente(queryRiscritta);
 		System.out.println("RISULTATI NON PULITI: "+risultati.toString());
 		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
-		mappaRisultati.put(nodo, risutatiFormaCorretta); //da fare un flatten perchè il campo "value" contene il json risultato corrispondente
+		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
@@ -96,18 +92,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 	 * 
 	 * @return La chiave esterna sulla quale il nodo padre effettua il join. Null altrimenti.
 	 */
-	//	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
-	//		String padre = null;
-	//		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
-	//			padre = grafoPriorita.getEdgeSource(arco);
-	//		}
-	//		for(List<String> condizioni : mappaWhere.get(padre)){
-	//			StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
-	//			if(st.nextToken().equals(nodo))
-	//				return st.nextToken();
-	//		}
-	//		return null;
-	//	}
 	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
 		String padre = null;
 		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
@@ -123,7 +107,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		return null;
 	}
 
-
 	private JsonArray pulisciRisultati(JsonArray ris) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<JsonElement> iterator = ris.iterator();
@@ -137,15 +120,13 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 				.replaceAll(":([^\"].*?),", ":\"$1\",")
 				.replaceAll(Pattern.quote("}{"), "},{");
 		String r2 = "["+r+"]";
-		StringReader s = new StringReader(r2);
-		JsonReader j = new JsonReader(s);
+		JsonReader j = new JsonReader(new StringReader(r2));
 		j.setLenient(true);
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
 	private JsonArray eseguiQueryDirettamente(StringBuilder queryRiscritta) throws Exception{
-		RelationalDao dao = new RelationalDao();
-		ResultSet risultatoResultSet = dao.interroga(queryRiscritta.toString());
+		ResultSet risultatoResultSet = new RelationalDao().interroga(queryRiscritta.toString());
 		JsonArray risultati = Convertitore.convertSQLToJson(risultatoResultSet);
 		return risultati;
 	}

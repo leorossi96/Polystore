@@ -18,8 +18,9 @@ public class ParserSql implements QueryParser{
 	private List<String> listaProiezioni;
 	private List<List<String>> matriceWhere;
 	
+	
 	@Override
-	public void spezza(String querySQL) throws Exception{
+	public void spezza(String querySQL) throws JSQLParserException{
 		
 		//utilizzo il parser jsql
     	CCJSqlParserManager parserManager = new CCJSqlParserManager();
@@ -58,7 +59,7 @@ public class ParserSql implements QueryParser{
     		} 
     	}
 	}
-	
+
 	@Override
 	public List<String> getTableList() {
 		return tableList;

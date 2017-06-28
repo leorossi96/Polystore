@@ -6,7 +6,7 @@ public class ParserMongo implements QueryParser {
 
 	@Override
 	public void spezza(String querySQL) throws Exception {
-		// TODO Auto-generated method stub
+		
 
 	}
 
