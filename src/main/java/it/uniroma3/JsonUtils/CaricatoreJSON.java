@@ -38,7 +38,7 @@ import scala.reflect.internal.Trees.This;
 
 public class CaricatoreJSON {
 
-	private static final String PATH_JSON_UTILI = /Users/leorossi/Desktop/fileJSON.txt;
+	private static final String PATH_JSON_UTILI = "/Users/leorossi/Desktop/fileJSON.txt";
 
 	/**
 	 * Carica da file i json utili in base alle tabelle

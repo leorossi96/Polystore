@@ -48,7 +48,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			campoSelect = "*";
 			queryRiscritta.append("SELECT *\nFROM\n");
 		}else
-			queryRiscritta.append("SELECT "+campoSelect+"\nFROM\n");
+			queryRiscritta.append("SELECT DISTINCT"+campoSelect+"\nFROM\n");
 
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){

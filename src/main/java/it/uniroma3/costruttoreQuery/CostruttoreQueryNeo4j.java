@@ -57,7 +57,7 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 			}
 		}
 		if(isFiglio)
-			queryRiscritta.append("RETURN "+campoReturn);
+			queryRiscritta.append("RETURN DISTINCT "+campoReturn);
 		else {
 			queryRiscritta.append("RETURN { ");
 			for(int n=0; n<nodo.size()-1; n++){

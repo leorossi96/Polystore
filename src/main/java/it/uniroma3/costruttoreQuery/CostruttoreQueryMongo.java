@@ -39,7 +39,7 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 			campoSelect = "*";
 			queryRiscritta.append("SELECT *\nFROM\n");
 		}else
-			queryRiscritta.append("SELECT "+campoSelect+"\nFROM\n");
+			queryRiscritta.append("SELECT DISTINCT"+campoSelect+"\nFROM\n");
 		for(int z=0; z<nodo.size(); z++){
 			String tabella = nodo.get(z);
 			if(z == nodo.size()-1)
