@@ -17,13 +17,13 @@ import com.google.gson.JsonParser;
  *
  */
 //controllare i casi in cui manca la where e da aggiustare con spazi. vedi spezzatore query
-public class ParserNeo4j {
+public class ParserNeo4j implements QueryParser{
 	private List<String> listaProiezioni;
 	private List<String> tableList;
 	private List<List<String>> matriceWhere;
 	
-	
-	public void spezza(String cypherQuery) throws JSQLParserException, FileNotFoundException{	
+	@Override
+	public void spezza(String cypherQuery) throws Exception{	
 		//creo la lista from
 		this.tableList = new LinkedList<>(); 
 		File fileJSON = new File("/Users/micheletedesco1/Desktop/fileJSON.txt");
@@ -85,25 +85,26 @@ public class ParserNeo4j {
 	public void setListaProiezioni(List<String> listaProiezioni) {
 		this.listaProiezioni = listaProiezioni;
 	}
-
+	
+	@Override
 	public List<String> getTableList() {
 		return tableList;
 	}
-
+	@Override
 	public void setTableList(List<String> listaFrom) {
 		this.tableList = listaFrom;
 	}
-
+	@Override
 	public List<List<String>> getMatriceWhere() {
 		return matriceWhere;
 	}
-
+	@Override
 	public void setMatriceWhere(List<List<String>> matriceWhere) {
 		this.matriceWhere = matriceWhere;
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException, JSQLParserException {
-		String cypherQuery ="MATCH (persona:persona), (scuola:scuola) WHERE persona.scuola=scuola.id AND scuola.nome='caffe' RETURN persona.name";
+		String cypherQuery = "MATCH (c:customer), (i:inventory), (r:rental) WHERE c.costumer_id = i.inventory_id AND r.inventory_id = i.inventory_id AND customer.last_name = 'Rossi'";
 		ParserNeo4j parserNeo4j = new ParserNeo4j();
 		parserNeo4j.spezza(cypherQuery);
 		System.out.println("lista proiezioni----->" + parserNeo4j.getListaProiezioni().toString());

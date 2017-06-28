@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.swing.tree.*;
 
@@ -27,15 +28,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import it.uniroma3.JsonUtils.parser.ParserMongo;
+import it.uniroma3.JsonUtils.parser.ParserNeo4j;
+import it.uniroma3.JsonUtils.parser.ParserSql;
+import it.uniroma3.JsonUtils.parser.QueryParser;
 import net.sf.jsqlparser.JSQLParserException;
+import scala.reflect.internal.Trees.This;
 
 //testato e funzionante attenzione alle virgolette, che cambiano nel file
 public class CaricatoreJSON {
 	private Map<String,JsonObject> jsonCheMiServono;
 
+
 	public CaricatoreJSON() {
 		this.jsonCheMiServono = new HashMap<String, JsonObject>();
-		
+
 	}
 
 	public void caricaJSON(List<String> listaFrom) throws FileNotFoundException{
@@ -332,7 +339,7 @@ public class CaricatoreJSON {
 		}
 		return grafoPrioritaCompatto;
 	}
-	
+
 
 	private static void addDiscendentiStessoDB(List<String> nodoNuovoGrafo, String nodoCorrente, String db, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili) {
 		Set<DefaultWeightedEdge> archi = grafoPriorita.outgoingEdgesOf(nodoCorrente);
@@ -361,7 +368,7 @@ public class CaricatoreJSON {
 		}
 		return mappaDB;
 	}
-	
+
 	public static SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> copiaGrafo (SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPriorita){
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> copia = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		for(List<String> nodo : grafoPriorita.vertexSet()){
@@ -374,12 +381,26 @@ public class CaricatoreJSON {
 		return copia;
 	}
 	
+	public QueryParser identificatoreQuery(String query) throws ClassNotFoundException	{
+		if (query.toLowerCase().startsWith("select"))
+			return new ParserSql();
+		else if (query.toLowerCase().startsWith("match"))
+			return new ParserNeo4j();
+		else if (query.toLowerCase().startsWith("db."))
+			return new ParserMongo();
+		throw new ClassNotFoundException();
+		
+	}
 
-	public static void main (String[] args) throws Exception{
-		String querySQL = "SELECT * FROM address, store WHERE address.address_id = store.address_id AND store.address_id = 4"; 
+	public void run() throws Exception {
 
-		ParserSql parser = new ParserSql();
-		parser.spezza(querySQL);//spezzo la query
+		String query = "SELECT * FROM address, store WHERE address.address_id = store.address_id AND store.address_id = 4"; 
+//		String queryCypher = "MATCH (a:address), (s:store) WHERE a.address_id = s.address_id AND s.address_id = 4";
+		
+		
+		
+		QueryParser parser = this.identificatoreQuery(query);
+		parser.spezza(query);//spezzo la query
 		List<String> tabelle = parser.getTableList();//ottengo le tabelle che formano la query
 		List<List<String>> matriceWhere = parser.getMatriceWhere();
 		CaricatoreJSON caricatoreDAFile = new CaricatoreJSON();
@@ -410,5 +431,12 @@ public class CaricatoreJSON {
 		//		Collections.reverse(matricePriorità);
 		//		System.out.println("matrice Priorita :" + matricePriorità.toString());		
 		//		TreeModel t = new DefaultTreeModel(null); ALTERNATIVA A JGRAPHT
+	}
+
+
+
+
+	public static void main (String[] args) throws Exception {
+		new CaricatoreJSON().run();
 	}
 }

@@ -13,12 +13,13 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
 
-public class ParserSql {
+public class ParserSql implements QueryParser{
 	private List<String> tableList;
 	private List<String> listaProiezioni;
 	private List<List<String>> matriceWhere;
 	
-	public void spezza(String querySQL) throws JSQLParserException{
+	@Override
+	public void spezza(String querySQL) throws Exception{
 		
 		//utilizzo il parser jsql
     	CCJSqlParserManager parserManager = new CCJSqlParserManager();
@@ -57,11 +58,13 @@ public class ParserSql {
     		} 
     	}
 	}
-
+	
+	@Override
 	public List<String> getTableList() {
 		return tableList;
 	}
 
+	@Override
 	public void setTableList(List<String> tableList) {
 		this.tableList = tableList;
 	}
@@ -74,10 +77,12 @@ public class ParserSql {
 		this.listaProiezioni = listaProiezioni;
 	}
 
+	@Override
 	public List<List<String>> getMatriceWhere() {
 		return matriceWhere;
 	}
 
+	@Override
 	public void setMatriceWhere(List<List<String>> matriceWhere) {
 		this.matriceWhere = matriceWhere;
 	}	
