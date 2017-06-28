@@ -82,7 +82,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		String querySQL = queryRiscritta.toString();
 		System.out.println("QUERY FINALE SQL : \n"+querySQL);
 		JsonArray risultati = eseguiQueryDirettamente(querySQL);
-		System.out.println("RISULTATI NON PULITI: "+risultati.toString());
 		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());

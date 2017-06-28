@@ -385,9 +385,7 @@ public class CaricatoreJSON {
 		Map<String, JsonObject> jsonUtili = this.caricaJSON(tabelle,PATH_JSON_UTILI);
 		System.out.println("json scaricati: \n" + jsonUtili + "\n");
 
-		FabbricatoreMappaStatement fabbricatoreCondizione = new FabbricatoreMappaStatement();
-		fabbricatoreCondizione.creaMappaWhere(matriceWhere, jsonUtili);
-		Map<String, List<List<String>>> mappaWhere = fabbricatoreCondizione.getMappaWhere();
+		Map<String, List<List<String>>> mappaWhere = new FabbricatoreMappaStatement().creaMappaWhere(matriceWhere, jsonUtili);
 		System.out.println("mappaWhere :"+ mappaWhere.toString()+"\n");
 
 		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = this.getAlberoPriorita(tabelle, jsonUtili, mappaWhere); //non pesato per fare testing
@@ -405,7 +403,7 @@ public class CaricatoreJSON {
 	}
 
 	public static void main (String[] args) throws Exception {
-		String query = "SELECT * FROM address, store WHERE address.address_id = store.address_id AND store.address_id = 4"; 
+		String query = "SELECT * FROM address, customer, payment, rental WHERE address.address_id = customer.address_id AND rental.customer_id = customer.customer_id AND rental.rental_id = payment.rental_id"; 
 		//String query = "MATCH (a:address), (s:store) WHERE a.address_id = s.address_id AND s.address_id = 4";
 		new CaricatoreJSON().run(query);
 	}
