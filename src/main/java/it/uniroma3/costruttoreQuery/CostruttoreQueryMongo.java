@@ -27,7 +27,7 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 
 	@Override
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto,
-			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph <String, DefaultWeightedEdge> grafoPriorita)
+			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph <String, DefaultWeightedEdge> grafoPriorita)
 					throws Exception {
 
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); //address.address_id ->["1","2"], customer.customer_id ->["4","9"]
@@ -36,10 +36,19 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		StringBuilder queryRiscritta = new StringBuilder();
 		if(campoSelect == null){
-			campoSelect = "*";
-			queryRiscritta.append("SELECT *\nFROM\n");
+			List<String> listaProiezioniNodo = new LinkedList<>();
+			for(String tabella : nodo){
+				if(mappaSelect.get(tabella) != null)
+					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
+			}
+			queryRiscritta.append("SELECT ");
+			if(listaProiezioniNodo.isEmpty())
+				queryRiscritta.append("*\nFROM\n");
+			else
+				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
 		}else
-			queryRiscritta.append("SELECT DISTINCT"+campoSelect+"\nFROM\n");
+			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
+
 		for(int z=0; z<nodo.size(); z++){
 			String tabella = nodo.get(z);
 			if(z == nodo.size()-1)
@@ -69,6 +78,82 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
+	}
+	
+	@Override
+	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nodoPath, List<String> nextNextNodoPath,
+			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
+			Map<List<String>, JsonArray> mappaRisultati) throws Exception{
+		StringBuilder queryProiezione = new StringBuilder();
+		queryProiezione.append("SELECT ");
+		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
+		for(String tabella: nextNodoPath){
+			if(mappaSelect.get(tabella) != null)
+				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
+		}
+		
+		
+		
+//		
+//		if(!campiDaSelezionareDelNodo.isEmpty()){ // se ha delle condizioni di suo  
+//			for(int i=0; i<campiDaSelezionareDelNodo.size(); i++)
+//				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+//		}
+//			String tabellaDiJoin = null;
+//			for(String tabella : nextNodoPath){
+//				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
+//					if(condizioneTabella.get(1).split("\\.")[1].contains(nextNextNodoPath.get(0)))
+//						tabellaDiJoin = tabella;
+//				}
+//			}
+//			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0)+"_id\nFROM\n");
+//		
+		
+		if(campiDaSelezionareDelNodo.isEmpty()){//vuol dire che è un nodo del path di passaggio
+//			for(int j=0; j<nextNodoPath.size()-1; j++){
+//				String tabella = nextNodoPath.get(j);
+//				queryProiezione.append(tabella+"."+tabella+"_id, ");
+//			}
+//			String ultimaTabella = nextNodoPath.get(nextNodoPath.size()-1);
+//			queryProiezione.append(ultimaTabella+"."+ultimaTabella+"_id\nFROM\n");
+			String tabellaDiJoin = null;
+			for(String tabella : nextNodoPath){
+				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
+					if(condizioneTabella.get(1).split("\\.")[1].contains(nextNextNodoPath.get(0)))
+						tabellaDiJoin = tabella;
+				}
+			}
+			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0)+"_id\nFROM\n");
+		}
+		else{
+			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			}
+			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+",");
+		}
+		
+		
+		for(int z=0; z<nextNodoPath.size()-1; z++)
+			queryProiezione.append(nextNodoPath.get(z)+",\n");
+		queryProiezione.append(nextNodoPath.get(nextNodoPath.size()-1)+"\nWHERE\n1=1\n");
+		
+		
+		for (String tabella: nextNodoPath){
+			List<List<String>> condizioniTabella = mappaWhere.get(tabella);
+			for(int j=0; j<condizioniTabella.size(); j++){
+				List<String> condizione = condizioniTabella.get(j);
+				String primaParolaParametro = condizione.get(1).split("\\.")[0];
+				if(nextNodoPath.contains(primaParolaParametro) || !mappaWhere.keySet().contains(primaParolaParametro)) //se la condizione è interna al nodo
+					queryProiezione.append("AND " + condizione.get(0) + " = " + condizione.get(1) +"\n");
+			}
+		}
+		queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		String query = queryProiezione.toString();
+		System.out.println("\nQUERY PROIEZIONE MONGO =\n"+query);
+		JsonArray risultati = eseguiQueryDirettamente(query);
+		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
+		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 
 

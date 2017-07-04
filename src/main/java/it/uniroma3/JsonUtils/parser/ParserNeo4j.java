@@ -81,11 +81,11 @@ public class ParserNeo4j implements QueryParser{
 
 
 	}
-	
+	@Override
 	public List<String> getListaProiezioni() {
 		return listaProiezioni;
 	}
-
+	@Override
 	public void setListaProiezioni(List<String> listaProiezioni) {
 		this.listaProiezioni = listaProiezioni;
 	}

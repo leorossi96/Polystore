@@ -34,4 +34,16 @@ public class ParserMongo implements QueryParser {
 
 	}
 
+	@Override
+	public List<String> getListaProiezioni() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setListaProiezioni(List<String> listaProiezioni) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

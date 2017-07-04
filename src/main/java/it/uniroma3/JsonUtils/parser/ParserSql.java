@@ -64,16 +64,15 @@ public class ParserSql implements QueryParser{
 	public List<String> getTableList() {
 		return tableList;
 	}
-
 	@Override
 	public void setTableList(List<String> tableList) {
 		this.tableList = tableList;
 	}
-
+	@Override
 	public List<String> getListaProiezioni() {
 		return listaProiezioni;
 	}
-
+	@Override
 	public void setListaProiezioni(List<String> listaProiezioni) {
 		this.listaProiezioni = listaProiezioni;
 	}

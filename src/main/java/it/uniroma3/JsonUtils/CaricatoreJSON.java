@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -16,6 +17,7 @@ import java.util.StringTokenizer;
 import javax.swing.tree.*;
 
 import org.jgrapht.WeightedGraph;
+import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -36,6 +38,7 @@ import it.uniroma3.exeptions.MalformedQueryException;
 import net.sf.jsqlparser.JSQLParserException;
 import scala.reflect.internal.Trees.This;
 
+@SuppressWarnings("deprecation")
 public class CaricatoreJSON {
 
 	private static final String PATH_JSON_UTILI = "/Users/leorossi/Desktop/fileJSON.txt";
@@ -185,7 +188,7 @@ public class CaricatoreJSON {
 
 
 
-	public SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getAlberoPriorita(List<String> tabelle,
+	public SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getGrafoPriorita(List<String> tabelle,
 			Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere) {
 		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> alberoPriorita = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		for(int i=0; i<tabelle.size(); i++){
@@ -367,7 +370,7 @@ public class CaricatoreJSON {
 			return new ParserNeo4j();
 		else if (query.toLowerCase().startsWith("db."))
 			return new ParserMongo();
-		throw new MalformedQueryException("La query in input non è SLQ, Cypher o Mongo");
+		throw new MalformedQueryException("La query in input non è SQL, Cypher o Mongo");
 
 	}
 
@@ -376,19 +379,55 @@ public class CaricatoreJSON {
 		parser.spezza(query);
 		return parser;
 	}
-	
+
+
+	private JsonArray effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati,
+			Map<String, List<String>> mappaSelect, List<String> radice) {
+		int size = mappaRisultati.get(radice).size();
+		for(String tabellaRisultati : mappaSelect.keySet()){
+			for(List<String> nodo : mappaRisultati.keySet()){
+				if(nodo.contains(tabellaRisultati) && mappaRisultati.get(nodo).size()==size){ //aggiungo uno ad uno
+					for(int i=0; i<size; i++){
+						JsonObject risultatoRadice = mappaRisultati.get(radice).get(i).getAsJsonObject();
+						JsonObject risultatoNodo = mappaRisultati.get(nodo).get(i).getAsJsonObject();
+						for(Entry<String, JsonElement> entry :risultatoNodo.entrySet()){
+							if(mappaSelect.get(tabellaRisultati).contains(tabellaRisultati+"."+entry.getKey())) //aggiunge solo i campi richiesti
+									risultatoRadice.add(entry.getKey(), entry.getValue());
+						}
+					}
+				}
+				else if (nodo.contains(tabellaRisultati) && mappaRisultati.get(nodo).size()==1){ //un risultato per tutte le ennupla 
+					JsonObject risultatoNodo = mappaRisultati.get(nodo).get(0).getAsJsonObject();
+					for(int i=0; i<size; i++){
+						JsonObject risultatoRadice = mappaRisultati.get(radice).get(i).getAsJsonObject();
+						for(Entry<String, JsonElement> entry :risultatoNodo.entrySet()){
+							if(mappaSelect.get(tabellaRisultati).contains(tabellaRisultati+"."+entry.getKey()))
+								risultatoRadice.add(entry.getKey(), entry.getValue());
+						}
+					}
+				}
+			}
+		}
+		return mappaRisultati.get(radice);
+	}
+
+
 	public void run(String query) throws Exception {
 
 		QueryParser parser = this.parseQuery(query);		
+		FabbricatoreMappaStatement fabbricatoreMappe = new FabbricatoreMappaStatement();
+		List<String> listaProiezioni = parser.getListaProiezioni();
+		Map<String, List<String>> mappaSelect = fabbricatoreMappe.creaMappaSelect(listaProiezioni);
+		System.out.println("lista proiezioni = "+listaProiezioni.toString());
 		List<String> tabelle = parser.getTableList();//tabelle che formano la query
 		List<List<String>> matriceWhere = parser.getMatriceWhere();
 		Map<String, JsonObject> jsonUtili = this.caricaJSON(tabelle,PATH_JSON_UTILI);
 		System.out.println("json scaricati: \n" + jsonUtili + "\n");
 
-		Map<String, List<List<String>>> mappaWhere = new FabbricatoreMappaStatement().creaMappaWhere(matriceWhere, jsonUtili);
+		Map<String, List<List<String>>> mappaWhere = fabbricatoreMappe.creaMappaWhere(matriceWhere, jsonUtili);
 		System.out.println("mappaWhere :"+ mappaWhere.toString()+"\n");
 
-		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = this.getAlberoPriorita(tabelle, jsonUtili, mappaWhere); //non pesato per fare testing
+		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = this.getGrafoPriorita(tabelle, jsonUtili, mappaWhere); //non pesato per fare testing
 		System.out.println("Grafo Priorità :" + grafoPriorita.toString());
 
 		Map<String, List<String>> mappaDB = this.getMappaDB(jsonUtili);
@@ -399,12 +438,21 @@ public class CaricatoreJSON {
 
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia = this.copiaGrafo(grafoPrioritaCompatto);
 
-		new GestoreQuery().esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere);
+		Map<List<String>, JsonArray> mappaRisultati = new HashMap<>();
+
+		GestoreQuery gestoreQuery = new GestoreQuery();
+		gestoreQuery.esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
+		System.out.println("MAPPA RISULTATI PRIMA DELLE PROIEZIONI = "+mappaRisultati.toString());
+		gestoreQuery.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere);
+		System.out.println("MAPPA RISULTATI DOPO LE PROIEZIONI = "+mappaRisultati.toString());
+		JsonArray risultato = this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect,  gestoreQuery.getRadice(grafoPrioritaCompatto)); //metodo che unisce i jsonArray nella mappaRisultati
+		System.out.println("\n\nRISULTATO FINALE =\n"+risultato.toString());
 	}
 
 	public static void main (String[] args) throws Exception {
-		String query = "SELECT * FROM address, customer, payment, rental WHERE address.address_id = customer.address_id AND rental.customer_id = customer.customer_id AND rental.rental_id = payment.rental_id"; 
-		//String query = "MATCH (a:address), (s:store) WHERE a.address_id = s.address_id AND s.address_id = 4";
+		//		String query = "SELECT film.title, customer.last_name FROM customer, rental, inventory, film WHERE rental.customer_id = customer.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND customer.last_name = 'Bianchi'"; 
+		//		String query = "MATCH (a:address), (s:store) WHERE a.address_id = s.address_id AND s.address_id = 4";
+		String query = "SELECT store.address_id FROM payment, rental, inventory, film, store, customer, address, city, country WHERE payment.rental_id = rental.rental_id AND rental.customer_id = customer.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND inventory.store_id = store.store_id AND customer.address_id = address.address_id AND address.city_id = city.city_id AND city.country_id = country.country_id";
 		new CaricatoreJSON().run(query);
 	}
 }

@@ -9,6 +9,8 @@ public interface QueryParser {
 	public List<String> getTableList();
 	public List<List<String>> getMatriceWhere();
 	public void setMatriceWhere(List<List<String>> matriceWhere);
+	public List<String> getListaProiezioni();
+	public void setListaProiezioni(List<String> listaProiezioni);
 	
 
 }

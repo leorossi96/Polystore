@@ -45,39 +45,45 @@ public class FabbricatoreMappaStatement {
 
 		Set<String> tabelle = jsonCheMiServono.keySet();
 		
-
+		for(String tabella:tabelle){
+			mappaWhere.put(tabella, new LinkedList<List<String>>());
+		}
 
 
 		for(List<String> rigaMatrice: matriceWhere){
-			String parola = rigaMatrice.get(0).split("\\.")[1].split("_id")[0];
+//			String parola = rigaMatrice.get(0).split("\\.")[1].split("_id")[0];
 			String tabellaPrimaCondizione = rigaMatrice.get(0).split("\\.")[0];
 			String tabellaSecondaCondizione = rigaMatrice.get(1).split("\\.")[0];
 			if(tabellaSecondaCondizione != null && tabelle.contains(tabellaSecondaCondizione)){
-				if(tabellaPrimaCondizione.equals(parola)){ //aggiungo la riga normalmente
-					mappaWhere = this.addMappaWhere(mappaWhere, tabellaPrimaCondizione, rigaMatrice);
-				}
-				else{//aggiungo la riga invertita alla tabella seconda condizione
-					List<String> rigaMatriceInvertita = new LinkedList<>();
-					rigaMatriceInvertita.add(rigaMatrice.get(1));
-					rigaMatriceInvertita.add(rigaMatrice.get(0));
-					mappaWhere = this.addMappaWhere(mappaWhere, tabellaSecondaCondizione, rigaMatriceInvertita);
-				}
+//				if(tabellaPrimaCondizione.equals(parola)){ //aggiungo la riga normalmente
+					mappaWhere.get(tabellaPrimaCondizione).add(rigaMatrice);
+//				}
+//				else{//aggiungo la riga invertita alla tabella seconda condizione
+//					List<String> rigaMatriceInvertita = new LinkedList<>();
+//					rigaMatriceInvertita.add(rigaMatrice.get(1));
+//					rigaMatriceInvertita.add(rigaMatrice.get(0));
+//					mappaWhere = this.addMappaWhere(mappaWhere, tabellaSecondaCondizione, rigaMatriceInvertita);
+//				}
 			}
 			else{ // aggiungilo a tabella nella mappaWhere
-				mappaWhere = this.addMappaWhere(mappaWhere, tabellaPrimaCondizione, rigaMatrice);
+				mappaWhere.get(tabellaPrimaCondizione).add(rigaMatrice);
 			}
 		}
 		return mappaWhere;
 	}
-	
-	private Map<String, List<List<String>>> addMappaWhere (Map<String, List<List<String>>> mappaWhere, String tabella, List<String> rigaDaInserire){
-		if(mappaWhere.containsKey(tabella))
-			mappaWhere.get(tabella).add(rigaDaInserire);
-		else{
-			List<List<String>> listaRigheMatrici = new LinkedList<>();
-			listaRigheMatrici.add(rigaDaInserire);
-			mappaWhere.put(tabella,listaRigheMatrici);
+
+	public Map<String, List<String>> creaMappaSelect(List<String> listaProiezioni) {
+		Map<String, List<String>> mappaSelect = new HashMap<>();
+		for(String proiezione : listaProiezioni){
+			String tabellaProiezione = proiezione.split("\\.")[0];
+			if(mappaSelect.containsKey(tabellaProiezione))
+				mappaSelect.get(tabellaProiezione).add(proiezione);
+			else{
+				List<String> proiezioniTabella = new LinkedList<>();
+				proiezioniTabella.add(proiezione);
+				mappaSelect.put(tabellaProiezione, proiezioniTabella);
+			}
 		}
-		return mappaWhere;
+		return mappaSelect;
 	}
 }

@@ -5,10 +5,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.jgrapht.alg.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import it.uniroma3.costruttoreQuery.CostruttoreQuery;
@@ -19,9 +22,8 @@ import it.uniroma3.costruttoreQuery.CostruttoreQuerySQL;
 
 public class GestoreQuery {
 
-	private Map<List<String>, JsonArray> mappaRisultati = new HashMap<>();
 
-	public void esegui(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere) throws Exception{
+	public void esegui(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati) throws Exception{
 		List<List<String>> foglie = this.getFoglie(grafoCopia);
 		if(foglie.size() == 0) //radice
 			return;
@@ -29,20 +31,104 @@ public class GestoreQuery {
 			Iterator<List<String>> i = foglie.iterator();
 			while(i.hasNext()){
 				List<String> foglia = i.next();
-				eseguiQuery(grafoPrioritaCompatto, foglia, jsonUtili, mappaWhere, this.mappaRisultati, grafoPriorita);
+				eseguiQuery(grafoPrioritaCompatto, foglia, jsonUtili, mappaWhere, mappaSelect, mappaRisultati, grafoPriorita);
 				//aggiornaWeights(grafoPrioritaCompatto, mappaWeights, mappaRisultati, foglia) devo avere coma parametro di esegui mappaWeights
 				//				grafoCopia.removeAllEdges(grafoCopia.incomingEdgesOf(foglia));
 				grafoCopia.removeVertex(foglia);
 			}
 		}
-		System.out.println("MAPPA RISULTATI = "+ this.mappaRisultati.toString());
+		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
 		//		mappaRisultati.toString().replaceAll(Pattern.quote("{\"store\":\"{"), "{");
 		//		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
-		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere);
+		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
+	}
+
+	public void eseguiProiezioni(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere) throws Exception{
+		List<String> radice = this.getRadice(grafoPrioritaCompatto);
+		Iterator<List<String>> i = grafoPrioritaCompatto.vertexSet().iterator();
+		List<String> nextNextNodoPath;
+		while(i.hasNext()){
+			boolean nodoSuCuiFareProiezioni = false;
+			List<String> nodo = i.next();
+			for(String tabellaNodo : nodo){
+				if(!nodo.get(0).equals(radice.get(0)) && mappaSelect.keySet().contains(tabellaNodo)){
+					nodoSuCuiFareProiezioni = true;
+				}
+			}
+			if(nodoSuCuiFareProiezioni){
+				List<List<String>> path = new DijkstraShortestPath(grafoPrioritaCompatto, radice, nodo).getPath().getVertexList();
+				List<String> fkUtili = new LinkedList<>();
+				if(path.size() == 2){
+					List<String> nodoPath = path.get(0);
+					List<String> nextNodoPath = path.get(1);
+					JsonArray risultati = mappaRisultati.get(nodoPath);
+					for(JsonElement je : risultati){
+						JsonObject jo = je.getAsJsonObject();
+						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+						System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
+					}
+				}
+				else{
+				for(int j=0; j<path.size()-2; j++){
+					List<String> nodoPath = path.get(j);
+					List<String> nextNodoPath = path.get(j+1);
+					nextNextNodoPath = path.get(j+2);
+					JsonArray risultati = mappaRisultati.get(nodoPath);
+					for(JsonElement je : risultati){
+						JsonObject jo = je.getAsJsonObject();
+						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+						System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
+					}
+					eseguiQueryProiezione(fkUtili, nextNodoPath, nodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+					fkUtili.clear();
+				}
+				}
+				nextNextNodoPath = null;
+				List<String> nodoPath = path.get(path.size()-2);
+				List<String> nextNodoPath = path.get(path.size()-1);
+				JsonArray risultati = mappaRisultati.get(nodoPath);
+				for(JsonElement je : risultati){
+					JsonObject jo = je.getAsJsonObject();
+					fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+					System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
+				}
+				eseguiQueryProiezione(fkUtili, nextNodoPath, nodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+			}
+		}
+
+	}
+
+	private void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nodoPath,
+			List<String> nextNextNodoPath, Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect) throws Exception {
+		CostruttoreQuery costruttoreQuery = null;
+		String dbNodo = null;
+		for(String db : mappaDB.keySet()){
+			if(mappaDB.get(db).contains(nextNodoPath.get(0)))
+				dbNodo = db;
+		}
+		if(dbNodo.equalsIgnoreCase("postgreSQL"))
+			costruttoreQuery = new CostruttoreQuerySQL();
+		if(dbNodo.equalsIgnoreCase("mongoDB"))
+			costruttoreQuery = new CostruttoreQueryMongo();
+		if(dbNodo.equalsIgnoreCase("neo4j"))
+			costruttoreQuery = new CostruttoreQueryNeo4j();
+		costruttoreQuery.eseguiQueryProiezione(fkUtili, nextNodoPath, nodoPath, nextNextNodoPath, mappaWhere, mappaSelect, mappaRisultati);
+	}
+
+	protected List<String> getRadice(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto) {
+		Iterator<List<String>> i = grafoPrioritaCompatto.vertexSet().iterator();
+		List<String> radice = null;
+		while(i.hasNext()){
+			List<String> nodo = i.next();
+			if(grafoPrioritaCompatto.incomingEdgesOf(nodo).isEmpty()){
+				radice = nodo;
+			}
+		}
+		return radice;
 	}
 
 	private void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo, Map<String, JsonObject> jsonUtili,
-			Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
+			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 		CostruttoreQuery costruttoreQuery = null;
 		JsonObject myJson = jsonUtili.get(nodo.get(0)).getAsJsonObject();
 		if(myJson.get("database").getAsString().equalsIgnoreCase("postgreSQL"))
@@ -51,8 +137,7 @@ public class GestoreQuery {
 			costruttoreQuery = new CostruttoreQueryMongo();
 		if(myJson.get("database").getAsString().equalsIgnoreCase("neo4j"))
 			costruttoreQuery = new CostruttoreQueryNeo4j();
-		costruttoreQuery.eseguiQuery(grafoPrioritaCompatto, nodo, mappaWhere, mappaRisultati, grafoPriorita);
-
+		costruttoreQuery.eseguiQuery(grafoPrioritaCompatto, nodo, mappaWhere, mappaSelect, mappaRisultati, grafoPriorita);
 	}
 
 	public List<List<String>> getFoglie(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> g){
@@ -62,5 +147,4 @@ public class GestoreQuery {
 				foglie.add(vertex);
 		return foglie;
 	}
-
 }

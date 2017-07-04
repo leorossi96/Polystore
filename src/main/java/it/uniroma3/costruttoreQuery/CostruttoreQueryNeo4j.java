@@ -25,17 +25,24 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 
 	@Override
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto,
-			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita)
+			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita)
 					throws Exception {
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); //address.address_id ->["1","2"], customer.customer_id ->["4","9"]
 
 		System.out.println("MAPPA ARRAY FK FIGLI = "+mappaArrayFkFigli.toString());
 		StringBuilder queryRiscritta = new StringBuilder();
 		boolean isFiglio = true;
+		boolean joinRisultati = false;
+		List<String> listaProiezioniNodo = new LinkedList<>();
 		String campoReturn = this.getForeingKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		if(campoReturn == null){
 			isFiglio = false;
+			for(String tabella : nodo){
+				if(mappaSelect.get(tabella) != null)
+					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
+			}
 		}
+
 		String tabellaPartenza = nodo.get(0);
 		queryRiscritta.append("MATCH ("+tabellaPartenza+" : "+tabellaPartenza+")\n");
 		queryRiscritta.append("WHERE 1=1\n");
@@ -44,7 +51,8 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 			for(int j=0; j<condizioniTabella.size(); j++){
 				List<String> condizione = condizioniTabella.get(j);
 				String primaParolaParametro = condizione.get(1).split("\\.")[0];
-				if(nodo.contains(primaParolaParametro)) {//non è una condizione di join 							
+				if(nodo.contains(primaParolaParametro)) {//non è una condizione di join 
+					joinRisultati = true;
 					queryRiscritta.append("MATCH ("+nodo.get(i)+" : "+nodo.get(i)+")--("+primaParolaParametro+" : "+primaParolaParametro+")\n");
 					queryRiscritta.append("WHERE 1=1\n");
 				}
@@ -59,18 +67,82 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		if(isFiglio)
 			queryRiscritta.append("RETURN DISTINCT "+campoReturn);
 		else {
-			queryRiscritta.append("RETURN { ");
-			for(int n=0; n<nodo.size()-1; n++){
-				queryRiscritta.append(nodo.get(n)+" : "+nodo.get(n)+", ");
+			if(listaProiezioniNodo.isEmpty()){
+				queryRiscritta.append("RETURN { ");
+				for(int n=0; n<nodo.size()-1; n++){
+					queryRiscritta.append(nodo.get(n)+" : "+nodo.get(n)+", ");
+				}
+				queryRiscritta.append(nodo.get(nodo.size()-1)+" : "+nodo.get(nodo.size()-1)+" }\n");
 			}
-			queryRiscritta.append(nodo.get(nodo.size()-1)+" : "+nodo.get(nodo.size()-1)+" }\n");
+			else{
+				queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
+			}
 		}
 
 		String queryNeo4j = queryRiscritta.toString();
 		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
-		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
+		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);		
+	}
+
+	@Override
+	public void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nodoPath, List<String> nextNextNodoPath,
+			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
+			Map<List<String>, JsonArray> mappaRisultati) throws Exception {
+
+		boolean isFiglio = true;
+		boolean joinRisultati = false;
+		StringBuilder queryProiezione = new StringBuilder();
+		String tabellaPartenza = nextNodoPath.get(0);
+		queryProiezione.append("MATCH ("+tabellaPartenza+" : "+tabellaPartenza+")\n");
+		queryProiezione.append("WHERE 1=1\n");
+		for(int i=0; i<nextNodoPath.size(); i++){
+			List<List<String>> condizioniTabella = mappaWhere.get(nextNodoPath.get(i));		
+			for(int j=0; j<condizioniTabella.size(); j++){
+				List<String> condizione = condizioniTabella.get(j);
+				String primaParolaParametro = condizione.get(1).split("\\.")[0];
+				if(nextNodoPath.contains(primaParolaParametro)) {//non è una condizione di join 
+					joinRisultati = true;
+					queryProiezione.append("MATCH ("+nextNodoPath.get(i)+" : "+nextNodoPath.get(i)+")--("+primaParolaParametro+" : "+primaParolaParametro+")\n");
+					queryProiezione.append("WHERE 1=1\n");
+				}
+				else if(!mappaWhere.keySet().contains(primaParolaParametro))
+					queryProiezione.append("AND "+condizione.get(0)+" = "+condizione.get(1)+"\n");
+			}			
+		}
+		queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString()+"\n");	
+
+		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
+		queryProiezione.append("RETURN \n");
+		for(String tabella: nextNodoPath){
+			if(mappaSelect.get(tabella) != null)
+				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
+		}
+
+		if(campiDaSelezionareDelNodo.isEmpty()){//vuol dire che è un nodo del path di passaggio
+			String tabellaDiJoin = null;
+			for(String tabella : nextNodoPath){
+				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
+					if(condizioneTabella.get(1).split("\\.")[1].contains(nextNextNodoPath.get(0)))
+						tabellaDiJoin = tabella;
+				}
+			}
+			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0));
+		}
+		else{
+			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			}
+			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1));
+		}
+
+		String queryNeo4j = queryProiezione.toString();
+		System.out.println("QUERY NEO4J PROIEZIONE=\n"+ queryNeo4j);
+		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, null, campiDaSelezionareDelNodo);
+		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati, joinRisultati, isFiglio);
+		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
+
 	}
 
 	private boolean condizioneStringente(Map<String, List<List<String>>> mappaWhere, String tabellaCorrente, String valoreCondizione) {
@@ -132,16 +204,24 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		return mappaArrayFkFigli;
 	}
 
-	private JsonArray pulisciRisultati(JsonArray ris) {
+	private JsonArray pulisciRisultati(JsonArray ris, boolean joinRisultati, boolean isFiglio) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<JsonElement> iterator = ris.iterator();
 		while (iterator.hasNext()) {
 			sb.append(iterator.next().toString());
 		}
 		String risultati = sb.toString();
-		String r = risultati.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
-				.replaceAll(Pattern.quote("}}"),"}")
-				.replaceAll(Pattern.quote("}{"), "},{");
+		String r;
+		if(joinRisultati && !isFiglio) // per risolvere il problema dei risultati nel caso in cui si abbia un join interno e quindi i risultati sono nella forma [{"payment":{"amount":10,"payment_id":1,"staff_id":1,"customer_id":1,"rental_id":1},"rental":{"inventory_id":1,"staff_id":1,"customer_id":1,"rental_id":1}},{"payment":{"amount":10,"payment_id":2,"staff_id":2,"customer_id":1,"rental_id":2},"rental":{"inventory_id":2,"staff_id":2,"customer_id":1,"rental_id":2}},{"payment":{"amount":20,"payment_id":3,"staff_id":2,"customer_id":2,"rental_id":3},"rental":{"inventory_id":7,"staff_id":2,"customer_id":2,"rental_id":3}}]
+			r = risultati.replaceAll("\\},\"([^:\\{].*?)\":\\{", ",")
+			.replaceAll("\\{\"([^:\\{].*?)\":\\{\"", "\\{\"")
+			.replaceAll(Pattern.quote("}{"), "},{")
+			.replaceAll(Pattern.quote("}}"),"}");
+		else{
+			r = risultati.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
+					.replaceAll(Pattern.quote("}}"),"}")
+					.replaceAll(Pattern.quote("}{"), "},{");
+		}
 		String r2 = "["+r+"]";
 		System.out.println("RISULTATI CORRETTI ="+r2); 
 		JsonReader j = new JsonReader(new StringReader(r2));
@@ -149,9 +229,9 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
-	private JsonArray eseguiQueryDirettamente(String query, String campoReturn) throws Exception{
+	private JsonArray eseguiQueryDirettamente(String query, String campoReturn, List<String> listaProiezioniNodo) throws Exception{
 		ResultSet risultatoResult = new GraphDao().interroga(query);
-		JsonArray risultati = Convertitore.convertCypherToJson(risultatoResult, campoReturn);
+		JsonArray risultati = Convertitore.convertCypherToJson(risultatoResult, campoReturn, listaProiezioniNodo);
 		return risultati;
 	}
 }
