@@ -39,8 +39,6 @@ public class Convertitore {
 						rigaRisultato.append("\""+listaProiezioniNodo.get(ultimoElemento).split("\\.")[1]+"\":"+resultSet.getObject((ultimoElemento+1)).toString()+"}");
 						System.out.println("PROVA RIGA RISULTATO CON SELECT = "+rigaRisultato.toString());
 						obj = (JsonObject) parser.parse(rigaRisultato.toString());
-
-
 					}
 				}
 					jsonArray.add(obj);

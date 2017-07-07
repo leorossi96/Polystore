@@ -13,7 +13,7 @@ public class DataSourceMongo {
 	private static final String PWD = "password"; 
 	private static Connection ISTANCE = null;
 
-	public static Connection getConnectio() throws ClassNotFoundException  {
+	public static Connection getConnection() throws ClassNotFoundException  {
 		if(ISTANCE == null) {
 			try {
 				Class.forName(DRIVER_NAME);

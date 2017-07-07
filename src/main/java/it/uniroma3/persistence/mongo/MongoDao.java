@@ -9,7 +9,7 @@ import java.sql.Statement;
 public class MongoDao {
 
 	public ResultSet interroga(String query) throws ClassNotFoundException {
-		Connection con = DataSourceMongo.getConnectio();
+		Connection con = DataSourceMongo.getConnection();
 		try {
 			Statement statement = con.createStatement();
 			ResultSet resultSet = statement.executeQuery(query);

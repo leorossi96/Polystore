@@ -208,6 +208,12 @@ public class Polystore {
 		return copia;
 	}
 
+	/**
+	 * 
+	 * @param query La query da parsare
+	 * @return Il giusto parser per la query data
+	 * @throws MalformedQueryException
+	 */
 	private QueryParser identificatoreQuery(String query) throws MalformedQueryException	{
 		if (query.toLowerCase().startsWith("select"))
 			return new ParserSql();

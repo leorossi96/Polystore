@@ -20,7 +20,6 @@ import it.uniroma3.persistence.mongo.MongoDao;
 
 public class CostruttoreQueryMongo implements CostruttoreQuery {
 
-
 	@Override
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto,
 			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph <String, DefaultWeightedEdge> grafoPriorita)
@@ -127,7 +126,6 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 
-
 	/**
 	 * 
 	 * @return La chiave esterna sulla quale il nodo padre effettua il join. Null altrimenti.
@@ -169,8 +167,6 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		}
 		return mappaArrayFkFigli;
 	}
-
-	
 
 	private JsonArray eseguiQueryDirettamente(String query) throws Exception { 
 		ResultSet risultatoResult = new MongoDao().interroga(query);
