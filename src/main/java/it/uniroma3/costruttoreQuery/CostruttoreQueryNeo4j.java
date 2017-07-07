@@ -1,9 +1,7 @@
 package it.uniroma3.costruttoreQuery;
 
-import java.io.StringReader;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +13,9 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
+import it.uniroma3.json.Convertitore;
+import it.uniroma3.json.ResultCleaner;
 import it.uniroma3.persistence.neo4j.GraphDao;
-import it.uniroma3.utils.json.Convertitore;
 
 public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 
@@ -82,7 +78,7 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		String queryNeo4j = queryRiscritta.toString();
 		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati, joinRisultati, isFiglio);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);		
 	}
 
@@ -140,7 +136,7 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		String queryNeo4j = queryProiezione.toString();
 		System.out.println("QUERY NEO4J PROIEZIONE=\n"+ queryNeo4j);
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, null, campiDaSelezionareDelNodo);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati, joinRisultati, isFiglio);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 
 	}
@@ -202,31 +198,6 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 			}
 		}
 		return mappaArrayFkFigli;
-	}
-
-	private JsonArray pulisciRisultati(JsonArray ris, boolean joinRisultati, boolean isFiglio) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<JsonElement> iterator = ris.iterator();
-		while (iterator.hasNext()) {
-			sb.append(iterator.next().toString());
-		}
-		String risultati = sb.toString();
-		String r;
-		if(joinRisultati && !isFiglio) // per risolvere il problema dei risultati nel caso in cui si abbia un join interno e quindi i risultati sono nella forma [{"payment":{"amount":10,"payment_id":1,"staff_id":1,"customer_id":1,"rental_id":1},"rental":{"inventory_id":1,"staff_id":1,"customer_id":1,"rental_id":1}},{"payment":{"amount":10,"payment_id":2,"staff_id":2,"customer_id":1,"rental_id":2},"rental":{"inventory_id":2,"staff_id":2,"customer_id":1,"rental_id":2}},{"payment":{"amount":20,"payment_id":3,"staff_id":2,"customer_id":2,"rental_id":3},"rental":{"inventory_id":7,"staff_id":2,"customer_id":2,"rental_id":3}}]
-			r = risultati.replaceAll("\\},\"([^:\\{].*?)\":\\{", ",")
-			.replaceAll("\\{\"([^:\\{].*?)\":\\{\"", "\\{\"")
-			.replaceAll(Pattern.quote("}{"), "},{")
-			.replaceAll(Pattern.quote("}}"),"}");
-		else{
-			r = risultati.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
-					.replaceAll(Pattern.quote("}}"),"}")
-					.replaceAll(Pattern.quote("}{"), "},{");
-		}
-		String r2 = "["+r+"]";
-		System.out.println("RISULTATI CORRETTI ="+r2); 
-		JsonReader j = new JsonReader(new StringReader(r2));
-		j.setLenient(true);
-		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
 	private JsonArray eseguiQueryDirettamente(String query, String campoReturn, List<String> listaProiezioniNodo) throws Exception{

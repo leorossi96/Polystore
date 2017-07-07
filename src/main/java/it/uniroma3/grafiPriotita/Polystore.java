@@ -1,4 +1,4 @@
-package it.uniroma3.utils.json;
+package it.uniroma3.grafiPriotita;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -23,7 +23,7 @@ import it.uniroma3.queryParser.ParserNeo4j;
 import it.uniroma3.queryParser.ParserSql;
 import it.uniroma3.queryParser.QueryParser;
 
-public class CaricatoreJSON {
+public class Polystore {
 
 	private static final String PATH_JSON_UTILI = "/Users/leorossi/Desktop/fileJSON.txt";
 
@@ -110,12 +110,12 @@ public class CaricatoreJSON {
 	}
 	
 	private static boolean allEquals(List<String> tabelle) {
-		boolean allEqual = true;
+		boolean allEquals = true;
 		for (String s : tabelle) {
 			if(!s.equals(tabelle.get(0)))
-				allEqual = false;
+				allEquals = false;
 		}
-		return allEqual;
+		return allEquals;
 	}
 
 	private SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> getGrafoPrioritaCompatto(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<String>> mappaDB){
@@ -256,7 +256,7 @@ public class CaricatoreJSON {
 	}
 
 
-	private void run(String query) throws Exception {
+	public void run(String query) throws Exception {
 
 		QueryParser parser = this.parseQuery(query);		
 		FabbricatoreMappaStatement fabbricatoreMappe = new FabbricatoreMappaStatement();
@@ -293,10 +293,4 @@ public class CaricatoreJSON {
 		System.out.println("\n\nRISULTATO FINALE =\n"+risultato.toString());
 	}
 
-	public static void main (String[] args) throws Exception {
-		//		String query = "SELECT film.title, customer.last_name FROM customer, rental, inventory, film WHERE rental.customer_id = customer.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND customer.last_name = 'Bianchi'"; 
-		//		String query = "MATCH (a:address), (s:store) WHERE a.address_id = s.address_id AND s.address_id = 4";
-		String query = "SELECT store.address_id FROM payment, rental, inventory, film, store, customer, address, city, country WHERE payment.rental_id = rental.rental_id AND rental.customer_id = customer.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND inventory.store_id = store.store_id AND customer.address_id = address.address_id AND address.city_id = city.city_id AND city.country_id = country.country_id";
-		new CaricatoreJSON().run(query);
-	}
 }

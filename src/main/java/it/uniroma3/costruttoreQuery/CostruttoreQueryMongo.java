@@ -1,9 +1,7 @@
 package it.uniroma3.costruttoreQuery;
 
-import java.io.StringReader;
 import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +14,9 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
+import it.uniroma3.json.Convertitore;
+import it.uniroma3.json.ResultCleaner;
 import it.uniroma3.persistence.mongo.MongoDao;
-import it.uniroma3.utils.json.Convertitore;
 
 public class CostruttoreQueryMongo implements CostruttoreQuery {
 
@@ -74,7 +70,7 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		String queryMongo = queryRiscritta.toString();
 		System.out.println("QUERY MONGO : \n"+queryMongo);
 		JsonArray risultati = eseguiQueryDirettamente(queryMongo);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
@@ -90,32 +86,8 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		for(String tabella: nextNodoPath){
 			if(mappaSelect.get(tabella) != null)
 				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
-		}
-		
-		
-		
-//		
-//		if(!campiDaSelezionareDelNodo.isEmpty()){ // se ha delle condizioni di suo  
-//			for(int i=0; i<campiDaSelezionareDelNodo.size(); i++)
-//				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
-//		}
-//			String tabellaDiJoin = null;
-//			for(String tabella : nextNodoPath){
-//				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
-//					if(condizioneTabella.get(1).split("\\.")[1].contains(nextNextNodoPath.get(0)))
-//						tabellaDiJoin = tabella;
-//				}
-//			}
-//			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0)+"_id\nFROM\n");
-//		
-		
+		}		
 		if(campiDaSelezionareDelNodo.isEmpty()){//vuol dire che è un nodo del path di passaggio
-//			for(int j=0; j<nextNodoPath.size()-1; j++){
-//				String tabella = nextNodoPath.get(j);
-//				queryProiezione.append(tabella+"."+tabella+"_id, ");
-//			}
-//			String ultimaTabella = nextNodoPath.get(nextNodoPath.size()-1);
-//			queryProiezione.append(ultimaTabella+"."+ultimaTabella+"_id\nFROM\n");
 			String tabellaDiJoin = null;
 			for(String tabella : nextNodoPath){
 				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
@@ -131,8 +103,7 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 			}
 			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+",");
 		}
-		
-		
+			
 		for(int z=0; z<nextNodoPath.size()-1; z++)
 			queryProiezione.append(nextNodoPath.get(z)+",\n");
 		queryProiezione.append(nextNodoPath.get(nextNodoPath.size()-1)+"\nWHERE\n1=1\n");
@@ -151,7 +122,7 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		String query = queryProiezione.toString();
 		System.out.println("\nQUERY PROIEZIONE MONGO =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
@@ -199,24 +170,7 @@ public class CostruttoreQueryMongo implements CostruttoreQuery {
 		return mappaArrayFkFigli;
 	}
 
-	private JsonArray pulisciRisultati(JsonArray ris) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<JsonElement> iterator = ris.iterator();
-		while (iterator.hasNext()) {
-			sb.append(iterator.next().toString());
-		}
-		String risultati = sb.toString();
-		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"")
-				.replaceAll(Pattern.quote("{\"value\":\"{"), "{")
-				.replaceAll(Pattern.quote("}\""), "")
-				.replaceAll(":([^\"].*?),", ":\"$1\",")
-				.replaceAll(Pattern.quote("}{"), "},{")
-				.replaceAll("([0-9]).0", "$1");
-		String r2 = "["+r+"]";
-		JsonReader j = new JsonReader(new StringReader(r2));
-		j.setLenient(true);
-		return new JsonParser().parse(j).getAsJsonArray();
-	}
+	
 
 	private JsonArray eseguiQueryDirettamente(String query) throws Exception { 
 		ResultSet risultatoResult = new MongoDao().interroga(query);

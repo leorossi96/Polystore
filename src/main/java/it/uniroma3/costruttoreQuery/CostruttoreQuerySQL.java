@@ -1,8 +1,6 @@
 package it.uniroma3.costruttoreQuery;
 
-import java.io.StringReader;
 import java.sql.ResultSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -13,13 +11,9 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
+import it.uniroma3.json.Convertitore;
+import it.uniroma3.json.ResultCleaner;
 import it.uniroma3.persistence.postgres.RelationalDao;
-import it.uniroma3.utils.json.Convertitore;
-
 
 public class CostruttoreQuerySQL implements CostruttoreQuery{
 
@@ -91,7 +85,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		String querySQL = queryRiscritta.toString();
 		System.out.println("QUERY FINALE SQL : \n"+querySQL);
 		JsonArray risultati = eseguiQueryDirettamente(querySQL);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
@@ -145,7 +139,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		String query = queryProiezione.toString();
 		System.out.println("\nQUERY PROIEZIONE SQL =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
-		JsonArray risutatiFormaCorretta = this.pulisciRisultati(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
@@ -167,24 +161,6 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			}
 		}
 		return null;
-	}
-
-	private JsonArray pulisciRisultati(JsonArray ris) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<JsonElement> iterator = ris.iterator();
-		while (iterator.hasNext()) {
-			sb.append(iterator.next().toString());
-		}
-		String risultati = sb.toString();
-		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"")
-				.replaceAll(Pattern.quote("{\"value\":\"{"), "{")
-				.replaceAll(Pattern.quote("}\""), "")
-				.replaceAll(":([^\"].*?),", ":\"$1\",")
-				.replaceAll(Pattern.quote("}{"), "},{");
-		String r2 = "["+r+"]";
-		JsonReader j = new JsonReader(new StringReader(r2));
-		j.setLenient(true);
-		return new JsonParser().parse(j).getAsJsonArray();
 	}
 
 	private JsonArray eseguiQueryDirettamente(String query) throws Exception{

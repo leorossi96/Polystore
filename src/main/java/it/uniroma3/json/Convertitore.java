@@ -1,4 +1,4 @@
-package it.uniroma3.utils.json;
+package it.uniroma3.json;
 
 import java.sql.ResultSet;
 import java.util.List;
@@ -63,4 +63,3 @@ public class Convertitore {
 	}
 
 }
-
