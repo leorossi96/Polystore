@@ -108,7 +108,7 @@ public class Polystore {
 		}
 		return figli;
 	}
-	
+
 	private static boolean allEquals(List<String> tabelle) {
 		boolean allEquals = true;
 		for (String s : tabelle) {
@@ -242,7 +242,7 @@ public class Polystore {
 						JsonObject risultatoNodo = mappaRisultati.get(nodo).get(i).getAsJsonObject();
 						for(Entry<String, JsonElement> entry :risultatoNodo.entrySet()){
 							if(mappaSelect.get(tabellaRisultati).contains(tabellaRisultati+"."+entry.getKey())) //aggiunge solo i campi richiesti
-									risultatoRadice.add(entry.getKey(), entry.getValue());
+								risultatoRadice.add(entry.getKey(), entry.getValue());
 						}
 					}
 				}
@@ -297,6 +297,18 @@ public class Polystore {
 		System.out.println("MAPPA RISULTATI DOPO LE PROIEZIONI = "+mappaRisultati.toString());
 		JsonArray risultato = this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect,  gestoreQuery.getRadice(grafoPrioritaCompatto)); //metodo che unisce i jsonArray nella mappaRisultati
 		System.out.println("\n\nRISULTATO FINALE =\n"+risultato.toString());
+	}
+
+	public static void main(String[] argc) {
+		//		String query = "SELECT film.title, customer.last_name FROM customer, rental, inventory, film WHERE rental.customer_id = customer.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND customer.last_name = 'Bianchi'"; 
+		//		String query = "MATCH (a:address), (s:store) WHERE a.address_id = s.address_id AND s.address_id = 4";
+		String query = "SELECT store.address_id FROM payment, rental, inventory, film, store, customer, address, city, country WHERE payment.rental_id = rental.rental_id AND rental.customer_id = customer.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND inventory.store_id = store.store_id AND customer.address_id = address.address_id AND address.city_id = city.city_id AND city.country_id = country.country_id";
+		try {
+			new Polystore().run(query);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 }
