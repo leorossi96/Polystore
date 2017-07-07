@@ -30,7 +30,7 @@ public class FacadeCypher {
 	public String gestisciQuery(String queryCypher) throws Exception{
 		ParserNeo4j parser = new ParserNeo4j();
 		parser.spezza(queryCypher);//spezzo la query
-		List<String> tabelle = parser.getTableList();//ottengo le tabelle che formano la query
+		List<String> tabelle = parser.getListaTabelle();//ottengo le tabelle che formano la query
 		List<List<String>> matriceWhere = parser.getMatriceWhere();
 		CaricatoreJSON caricatoreDAFile = new CaricatoreJSON();
 		caricatoreDAFile.caricaJSON(tabelle);//carico da file i json utili in base alle tabelle

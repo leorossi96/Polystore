@@ -11,7 +11,7 @@ public class DataSourceNeo4j {
 	private static final String PWD = "password";
 	private static Connection ISTANCE;
 
-	public static Connection getConnectio() {
+	public static Connection getConnection() {
 		if (ISTANCE == null) {
 			try {
 				ISTANCE = DriverManager.getConnection(URI,USER_ID,PWD);

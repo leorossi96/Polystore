@@ -11,13 +11,13 @@ public class ParserMongo implements QueryParser {
 	}
 
 	@Override
-	public void setTableList(List<String> listaFrom) {
+	public void setListaTabelle(List<String> listaFrom) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<String> getTableList() {
+	public List<String> getListaTabelle() {
 		// TODO Auto-generated method stub
 		return null;
 	}

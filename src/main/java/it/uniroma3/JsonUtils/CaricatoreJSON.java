@@ -188,21 +188,20 @@ public class CaricatoreJSON {
 
 
 
-	public SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getGrafoPriorita(List<String> tabelle,
-			Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere) {
-		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> alberoPriorita = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
+	public SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getGrafoPriorita(List<String> tabelle, Map<String, List<List<String>>> mappaWhere) {
+		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		for(int i=0; i<tabelle.size(); i++){
 			String tabellaCorrente = tabelle.get(i);
-			alberoPriorita.addVertex(tabellaCorrente);
+			grafoPriorita.addVertex(tabellaCorrente);
 			List<String> figli = getFigli(tabellaCorrente, mappaWhere, tabelle);
 			for(int j=0; j<figli.size(); j++){
 				String figlio = figli.get(j);
-				alberoPriorita.addVertex(figlio);
-				DefaultWeightedEdge e = alberoPriorita.addEdge(tabellaCorrente, figlio);
-				alberoPriorita.setEdgeWeight(e, 0);
+				grafoPriorita.addVertex(figlio);
+				DefaultWeightedEdge e = grafoPriorita.addEdge(tabellaCorrente, figlio);
+				grafoPriorita.setEdgeWeight(e, 0);
 			}
 		}
-		return alberoPriorita;
+		return grafoPriorita;
 	}
 
 
@@ -419,7 +418,7 @@ public class CaricatoreJSON {
 		List<String> listaProiezioni = parser.getListaProiezioni();
 		Map<String, List<String>> mappaSelect = fabbricatoreMappe.creaMappaSelect(listaProiezioni);
 		System.out.println("lista proiezioni = "+listaProiezioni.toString());
-		List<String> tabelle = parser.getTableList();//tabelle che formano la query
+		List<String> tabelle = parser.getListaTabelle();//tabelle che formano la query
 		List<List<String>> matriceWhere = parser.getMatriceWhere();
 		Map<String, JsonObject> jsonUtili = this.caricaJSON(tabelle,PATH_JSON_UTILI);
 		System.out.println("json scaricati: \n" + jsonUtili + "\n");
@@ -427,7 +426,7 @@ public class CaricatoreJSON {
 		Map<String, List<List<String>>> mappaWhere = fabbricatoreMappe.creaMappaWhere(matriceWhere, jsonUtili);
 		System.out.println("mappaWhere :"+ mappaWhere.toString()+"\n");
 
-		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = this.getGrafoPriorita(tabelle, jsonUtili, mappaWhere); //non pesato per fare testing
+		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = this.getGrafoPriorita(tabelle, mappaWhere); //non pesato per fare testing
 		System.out.println("Grafo Priorità :" + grafoPriorita.toString());
 
 		Map<String, List<String>> mappaDB = this.getMappaDB(jsonUtili);

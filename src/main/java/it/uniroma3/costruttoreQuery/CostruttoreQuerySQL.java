@@ -98,7 +98,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 	}
 
 	@Override
-	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nodoPath, List<String> nextNextNodoPath,
+	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception{
 		StringBuilder queryProiezione = new StringBuilder();

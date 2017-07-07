@@ -90,11 +90,11 @@ public class ParserNeo4j implements QueryParser{
 		this.listaProiezioni = listaProiezioni;
 	}
 	@Override
-	public List<String> getTableList() {
+	public List<String> getListaTabelle() {
 		return tableList;
 	}
 	@Override
-	public void setTableList(List<String> listaFrom) {
+	public void setListaTabelle(List<String> listaFrom) {
 		this.tableList = listaFrom;
 	}
 	
@@ -113,7 +113,7 @@ public class ParserNeo4j implements QueryParser{
 		ParserNeo4j parserNeo4j = new ParserNeo4j();
 		parserNeo4j.spezza(cypherQuery);
 		System.out.println("lista proiezioni----->" + parserNeo4j.getListaProiezioni().toString());
-		System.out.println("lista tabelle----->" + parserNeo4j.getTableList().toString());
+		System.out.println("lista tabelle----->" + parserNeo4j.getListaTabelle().toString());
 		System.out.println("lista clausule where [attributo valore]---->" + parserNeo4j.getMatriceWhere().toString());
 	}
 }

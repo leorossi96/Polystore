@@ -14,7 +14,7 @@ import net.sf.jsqlparser.util.TablesNamesFinder;
 
 
 public class ParserSql implements QueryParser{
-	private List<String> tableList;
+	private List<String> listaTabelle;
 	private List<String> listaProiezioni;
 	private List<List<String>> matriceWhere;
 	
@@ -30,7 +30,7 @@ public class ParserSql implements QueryParser{
     	
     	//creo la listaFROM
     	TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
-    	this.tableList = tablesNamesFinder.getTableList(select);
+    	this.listaTabelle = tablesNamesFinder.getTableList(select);
     	
     	//creo la listaSELECT
     	List<SelectItem> listaSelectItems = ps.getSelectItems();
@@ -61,12 +61,12 @@ public class ParserSql implements QueryParser{
 	}
 
 	@Override
-	public List<String> getTableList() {
-		return tableList;
+	public List<String> getListaTabelle() {
+		return listaTabelle;
 	}
 	@Override
-	public void setTableList(List<String> tableList) {
-		this.tableList = tableList;
+	public void setListaTabelle(List<String> tableList) {
+		this.listaTabelle = tableList;
 	}
 	@Override
 	public List<String> getListaProiezioni() {

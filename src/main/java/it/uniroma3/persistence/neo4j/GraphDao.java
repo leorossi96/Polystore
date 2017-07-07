@@ -8,7 +8,7 @@ import java.sql.Statement;
 public class GraphDao {
 
 	public ResultSet interroga(String query) throws SQLException{
-		Connection con = DataSourceNeo4j.getConnectio();
+		Connection con = DataSourceNeo4j.getConnection();
 		Statement stmt = con.createStatement();
 		ResultSet results = stmt.executeQuery(query);
 		return results;

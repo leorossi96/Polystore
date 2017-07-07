@@ -79,7 +79,7 @@ public class GestoreQuery {
 						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
 						System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
 					}
-					eseguiQueryProiezione(fkUtili, nextNodoPath, nodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 					fkUtili.clear();
 				}
 				}
@@ -92,14 +92,13 @@ public class GestoreQuery {
 					fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
 					System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
 				}
-				eseguiQueryProiezione(fkUtili, nextNodoPath, nodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+				eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 			}
 		}
-
 	}
 
-	private void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nodoPath,
-			List<String> nextNextNodoPath, Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect) throws Exception {
+	private void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
+			Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect) throws Exception {
 		CostruttoreQuery costruttoreQuery = null;
 		String dbNodo = null;
 		for(String db : mappaDB.keySet()){
@@ -112,7 +111,7 @@ public class GestoreQuery {
 			costruttoreQuery = new CostruttoreQueryMongo();
 		if(dbNodo.equalsIgnoreCase("neo4j"))
 			costruttoreQuery = new CostruttoreQueryNeo4j();
-		costruttoreQuery.eseguiQueryProiezione(fkUtili, nextNodoPath, nodoPath, nextNextNodoPath, mappaWhere, mappaSelect, mappaRisultati);
+		costruttoreQuery.eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath, mappaWhere, mappaSelect, mappaRisultati);
 	}
 
 	protected List<String> getRadice(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto) {
