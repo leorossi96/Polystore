@@ -15,9 +15,9 @@ public class QueryController {
 		try {
 			polystore.run(this.query);	
 		} catch (Exception e) {
-			return "error";
+			return "index";
 		}
 		
-		return "index";
+		return "riuscito";
 	}
 }
