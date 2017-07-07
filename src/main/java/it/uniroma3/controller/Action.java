@@ -2,8 +2,8 @@ package it.uniroma3.controller;
 
 
 
-import it.uniroma3.model.FacadeCypher;
-import it.uniroma3.model.FacadeSQL;
+import it.uniroma3.model.facade.FacadeCypher;
+import it.uniroma3.model.facade.FacadeSQL;
 
 import javax.servlet.http.HttpServletRequest;
 
