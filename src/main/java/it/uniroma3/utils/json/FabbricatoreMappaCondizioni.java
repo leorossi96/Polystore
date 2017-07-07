@@ -1,4 +1,4 @@
-package it.uniroma3.JsonUtils;
+package it.uniroma3.utils.json;
 
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
@@ -17,7 +17,6 @@ import com.google.gson.JsonObject;
  * Questa classe ha il compito di creare da una collezione di condizioni "sparse" una mappa di condizioni associate
  * a quella particolare tabella (key = tabelle da interrogare, value = condizioni associate
  * a quelle tabelle). ES: customer = [[customer.nome, mario],[customer.id_store,1]]
- * @author micheletedesco1
  *
  */
 public class FabbricatoreMappaCondizioni {
@@ -34,12 +33,9 @@ public class FabbricatoreMappaCondizioni {
 	 * @param jsonCheMiServono una collezione di JsonObject contenenti informazioni sulle tabelle da interrogare
 	 */
 	public void creaMappaCondizioni(List<List<String>> matriceWhere, Map<String, JsonObject> jsonCheMiServono ) throws UnknownHostException, FileNotFoundException, JSQLParserException {
-		
-	    
+		 
 	    JsonObject myjson = new JsonObject();
 		Set<String> tabelle = jsonCheMiServono.keySet();
-		
-		
 		
 		for (String s : tabelle){
 			List<List<String>> matriceWherePreciso = new LinkedList<>();
@@ -65,7 +61,5 @@ public class FabbricatoreMappaCondizioni {
 	public void setMappaWhere(Map<String, List<List<String>>> mappaWhere) {
 		this.mappaWhere = mappaWhere;
 	}
-	
-	
 
 }

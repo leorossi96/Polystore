@@ -1,6 +1,5 @@
-package it.uniroma3.JsonUtils;
+package it.uniroma3.utils.json;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,9 +18,8 @@ import it.uniroma3.costruttoreQuery.CostruttoreQueryMongo;
 import it.uniroma3.costruttoreQuery.CostruttoreQueryNeo4j;
 import it.uniroma3.costruttoreQuery.CostruttoreQuerySQL;
 
-
+@SuppressWarnings("deprecation")
 public class GestoreQuery {
-
 
 	public void esegui(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati) throws Exception{
 		List<List<String>> foglie = this.getFoglie(grafoCopia);
@@ -32,17 +30,14 @@ public class GestoreQuery {
 			while(i.hasNext()){
 				List<String> foglia = i.next();
 				eseguiQuery(grafoPrioritaCompatto, foglia, jsonUtili, mappaWhere, mappaSelect, mappaRisultati, grafoPriorita);
-				//aggiornaWeights(grafoPrioritaCompatto, mappaWeights, mappaRisultati, foglia) devo avere coma parametro di esegui mappaWeights
-				//				grafoCopia.removeAllEdges(grafoCopia.incomingEdgesOf(foglia));
 				grafoCopia.removeVertex(foglia);
 			}
 		}
 		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
-		//		mappaRisultati.toString().replaceAll(Pattern.quote("{\"store\":\"{"), "{");
-		//		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
 		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void eseguiProiezioni(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere) throws Exception{
 		List<String> radice = this.getRadice(grafoPrioritaCompatto);
 		Iterator<List<String>> i = grafoPrioritaCompatto.vertexSet().iterator();

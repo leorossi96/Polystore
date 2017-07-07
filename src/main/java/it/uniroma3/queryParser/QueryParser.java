@@ -1,4 +1,4 @@
-package it.uniroma3.JsonUtils.parser;
+package it.uniroma3.queryParser;
 
 import java.util.List;
 
@@ -12,5 +12,4 @@ public interface QueryParser {
 	public List<String> getListaProiezioni();
 	public void setListaProiezioni(List<String> listaProiezioni);
 	
-
 }

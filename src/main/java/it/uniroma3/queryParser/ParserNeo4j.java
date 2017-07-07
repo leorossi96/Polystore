@@ -1,4 +1,4 @@
-package it.uniroma3.JsonUtils.parser;
+package it.uniroma3.queryParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -11,12 +11,6 @@ import net.sf.jsqlparser.JSQLParserException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-
-/**
- * è il parser per query cypher. Non riuscivo a trovarne uno decente per java
- *
- */
-//controllare i casi in cui manca la where e da aggiustare con spazi. vedi spezzatore query
 public class ParserNeo4j implements QueryParser{
 	private List<String> listaProiezioni;
 	private List<String> tableList;
@@ -29,8 +23,6 @@ public class ParserNeo4j implements QueryParser{
 		this.tableList = new LinkedList<>(); 
 		File fileJSON = new File("/Users/leorossi/Desktop/fileJSON.txt");
 		Scanner scanner = new Scanner(fileJSON);
-		//{'table' : 'persona', 'database' : 'postgerSQL', 'members':['persona.id', 'persona.nome', 'persona.scuola'] 'query' : 'SELECT * FROM persona WHERE 1=1'}
-		//{'table' : 'scuola', 'database' : 'mongoDB', 'members':['scuola.id', 'scuola.nome'] }
 		while (scanner.hasNextLine()) {			
 			String line = scanner.nextLine();
 			JsonParser parser = new JsonParser();
@@ -72,14 +64,7 @@ public class ParserNeo4j implements QueryParser{
 				this.listaProiezioni.add(partiReturn[i]);
 			}
 		}
-
-
-
-
-
-
-
-
+		
 	}
 	@Override
 	public List<String> getListaProiezioni() {
@@ -108,13 +93,5 @@ public class ParserNeo4j implements QueryParser{
 		this.matriceWhere = matriceWhere;
 	}
 
-	public static void main(String[] args) throws FileNotFoundException, JSQLParserException {
-		String cypherQuery = "MATCH (c:customer), (i:inventory), (r:rental) WHERE c.costumer_id = i.inventory_id AND r.inventory_id = i.inventory_id AND customer.last_name = 'Rossi'";
-		ParserNeo4j parserNeo4j = new ParserNeo4j();
-		parserNeo4j.spezza(cypherQuery);
-		System.out.println("lista proiezioni----->" + parserNeo4j.getListaProiezioni().toString());
-		System.out.println("lista tabelle----->" + parserNeo4j.getListaTabelle().toString());
-		System.out.println("lista clausule where [attributo valore]---->" + parserNeo4j.getMatriceWhere().toString());
-	}
 }
 

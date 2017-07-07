@@ -1,4 +1,4 @@
-package it.uniroma3.persistence;
+package it.uniroma3.exeptions;
 
 public class PersistenceException extends RuntimeException {
     private static final long serialVersionUID = 1L;

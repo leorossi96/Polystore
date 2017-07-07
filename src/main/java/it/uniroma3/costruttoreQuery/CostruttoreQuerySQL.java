@@ -17,8 +17,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-import it.uniroma3.JsonUtils.Convertitore;
 import it.uniroma3.persistence.postgres.RelationalDao;
+import it.uniroma3.utils.json.Convertitore;
 
 
 public class CostruttoreQuerySQL implements CostruttoreQuery{

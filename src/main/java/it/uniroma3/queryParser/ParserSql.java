@@ -1,4 +1,4 @@
-package it.uniroma3.JsonUtils.parser;
+package it.uniroma3.queryParser;
 
 import java.io.StringReader;
 import java.util.LinkedList;
@@ -12,7 +12,6 @@ import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
-
 public class ParserSql implements QueryParser{
 	private List<String> listaTabelle;
 	private List<String> listaProiezioni;
@@ -22,11 +21,9 @@ public class ParserSql implements QueryParser{
 	@Override
 	public void spezza(String querySQL) throws JSQLParserException{
 		
-		//utilizzo il parser jsql
     	CCJSqlParserManager parserManager = new CCJSqlParserManager();
     	Select select = (Select) parserManager.parse(new StringReader(querySQL));
     	PlainSelect ps = (PlainSelect) select.getSelectBody();
-    	
     	
     	//creo la listaFROM
     	TablesNamesFinder tablesNamesFinder = new TablesNamesFinder();
@@ -86,12 +83,5 @@ public class ParserSql implements QueryParser{
 	public void setMatriceWhere(List<List<String>> matriceWhere) {
 		this.matriceWhere = matriceWhere;
 	}	
-	
- 
-		/*String stringaSql =  "SELECT customer.last_Name " +
-                               "FROM customer , rental , inventory "+
-				               "WHERE customer.customer_ID=rental.customer_ID AND rental.inventory_ID=inventory.inventory_id AND inventory.film='Titanic'";
-		*/
-		
    
 }

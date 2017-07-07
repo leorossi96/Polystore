@@ -1,9 +1,7 @@
-package it.uniroma3.JsonUtils;
+package it.uniroma3.utils.json;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,33 +10,19 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.StringTokenizer;
-
-import javax.swing.tree.*;
-
-import org.jgrapht.WeightedGraph;
-import org.jgrapht.alg.DijkstraShortestPath;
-import org.jgrapht.graph.DefaultDirectedWeightedGraph;
-import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
-import org.jgrapht.graph.SimpleWeightedGraph;
-import org.jgrapht.graph.builder.DirectedWeightedGraphBuilder;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import it.uniroma3.JsonUtils.parser.ParserMongo;
-import it.uniroma3.JsonUtils.parser.ParserNeo4j;
-import it.uniroma3.JsonUtils.parser.ParserSql;
-import it.uniroma3.JsonUtils.parser.QueryParser;
 import it.uniroma3.exeptions.MalformedQueryException;
-import net.sf.jsqlparser.JSQLParserException;
-import scala.reflect.internal.Trees.This;
+import it.uniroma3.queryParser.ParserMongo;
+import it.uniroma3.queryParser.ParserNeo4j;
+import it.uniroma3.queryParser.ParserSql;
+import it.uniroma3.queryParser.QueryParser;
 
-@SuppressWarnings("deprecation")
 public class CaricatoreJSON {
 
 	private static final String PATH_JSON_UTILI = "/Users/leorossi/Desktop/fileJSON.txt";
@@ -71,15 +55,13 @@ public class CaricatoreJSON {
 
 
 	public static List<String> getTabellaPrioritaAlta(List<String> tabelle, Map<String, JsonObject> jsonUtili) {
-		//String tabellaPreferita = tabelle.get(0);
-		//System.out.println("TABELLE :" + tabelle);
+
 		if (tabelle.size()==1)
 			return tabelle;
 		List<String> tabellePreferite = new LinkedList<>();
 		if (allEquals(tabelle) == true){
 			tabellePreferite.add(tabelle.get(0));		
 		}
-		//tabellePreferite.add(tabellaPreferita);
 		for(int i=0; i<tabelle.size();i++){
 			JsonObject oggetto = jsonUtili.get(tabelle.get(i)); //es customer
 			JsonArray knows = oggetto.get("knows").getAsJsonArray(); //es store e address
@@ -100,95 +82,7 @@ public class CaricatoreJSON {
 		return tabellePreferite;
 	}
 
-	public static String getRadice(List<String> tabellePriorità){
-		return tabellePriorità.get(0);
-	}
-
-	public static boolean isStarQuery(String radice, List<String> tabelle, Map<String, List<List<String>>> mappaWhere){
-		int contatoreJoin = 0;
-		List<List<String>> condizioniRadice = mappaWhere.get(radice);
-		for(int i=0; i<condizioniRadice.size(); i++){
-			List<String> condizione = condizioniRadice.get(i);
-			for(int j=0; j<tabelle.size(); j++){
-				String tabella = tabelle.get(j);
-				if(condizione.get(1).split("\\.")[0].equals(tabella)){
-					System.out.println("JOIN "+radice+" con "+tabella);
-					contatoreJoin++;
-				}
-			}
-		}
-		return contatoreJoin>=2;		
-	}
-
-	private static List<String> rimuovi(List<String> lista, String elemento){
-		List<String> risultato = new LinkedList<>(lista);
-		risultato.remove(elemento);
-		return risultato;		
-	}
-
-	//	private static <K, V> Map<K,V> rimuovi(Map<K,V> mappa, String elemento){
-	//		Map<K,V> risultato = new HashMap<>(mappa);
-	//		risultato.remove(elemento);
-	//		return risultato;		
-	//	}
-
-
-	//	public static List<List<String>> getMatricePriorita(List<String> tabelle, Map<String, JsonObject> jsonUtili,Map<String, List<List<String>>> mappaWhere, List<List<String>> matricePriorita){ 
-	//		System.out.println("\n"+ "Matrice Priorità parziale :"+ matricePriorita);
-	//		if(tabelle.isEmpty())
-	//			return matricePriorita;
-	//		else{
-	//			List<String> rigaDaAggiungere = new LinkedList<>();
-	//			String radice = getRadice(getTabellaPrioritaAlta(tabelle, jsonUtili));
-	//			System.out.println("Radice sottoalbero : "+ radice);
-	//			List<String> tabelleModificate = rimuovi(tabelle, radice); 
-	//			
-	//			if(isStarQuery(radice, tabelle, mappaWhere)){
-	//				System.out.println("isStarQuery:"+ radice);
-	//				List<String> rigaSoloRadice = new LinkedList<>(); //Intanto aggiungo l'elemento radice che viene sempre rimosso da jsonUtili, tabelle e mappaWhere
-	//				rigaSoloRadice.add(radice);
-	//				matricePriorita.add(rigaSoloRadice);
-	//				
-	//				List<List<String>> condizioniRadice = mappaWhere.get(radice);
-	//				for(int i=0; i<condizioniRadice.size(); i++){
-	//					List<String> condizione = condizioniRadice.get(i);
-	//					for(int j=0; j<tabelle.size(); j++){
-	//						String tabella = tabelle.get(j);
-	//						if(condizione.get(1).split("\\.")[0].equals(tabella)){
-	//							rigaDaAggiungere.add(tabella);
-	//							tabelleModificate = rimuovi(tabelleModificate, tabella);
-	//						}
-	//					}
-	//				}
-	//				matricePriorita.add(rigaDaAggiungere);
-	//				return getMatricePriorita(tabelleModificate, jsonUtili, mappaWhere, matricePriorita); 
-	//			}else{ //Se non è una query a stella
-	//				rigaDaAggiungere.add(radice);
-	//				matricePriorita.add(rigaDaAggiungere);
-	//				return getMatricePriorita(tabelleModificate, jsonUtili, mappaWhere, matricePriorita); //jsonUtiliModificati e mappaWhereModificata
-	//			}
-	//		}
-	//	}
-
-	public static SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getAlberoPriorita(List<String> tabelle, Map<String, JsonObject> jsonUtili, Map<String, List<List<String>>> mappaWhere, Map<String, Integer> mappaWeight){
-		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> alberoPriorita = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-		for(int i=0; i<tabelle.size(); i++){
-			String tabellaCorrente = tabelle.get(i);
-			alberoPriorita.addVertex(tabellaCorrente);
-			List<String> figli = getFigli(tabellaCorrente, mappaWhere, tabelle);
-			for(int j=0; j<figli.size(); j++){
-				String figlio = figli.get(j);
-				alberoPriorita.addVertex(figlio);
-				DefaultWeightedEdge e = alberoPriorita.addEdge(tabellaCorrente, figlio);
-				alberoPriorita.setEdgeWeight(e, getJoinWeight(tabellaCorrente, figlio, mappaWeight, mappaWhere, jsonUtili));
-			}
-		}
-		return alberoPriorita;
-	}
-
-
-
-	public SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getGrafoPriorita(List<String> tabelle, Map<String, List<List<String>>> mappaWhere) {
+	private SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getGrafoPriorita(List<String> tabelle, Map<String, List<List<String>>> mappaWhere) {
 		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		for(int i=0; i<tabelle.size(); i++){
 			String tabellaCorrente = tabelle.get(i);
@@ -204,35 +98,7 @@ public class CaricatoreJSON {
 		return grafoPriorita;
 	}
 
-
-
-	public void aggiornaWeights(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonArray> mappaRisultati, Map<String, Integer> mappaWeight, String foglia, Map<String, List<List<String>>> mappaWhere, Map<String, JsonObject> jsonUtili){
-		mappaWeight.put(foglia,  mappaRisultati.get(foglia).size());
-		for(DefaultWeightedEdge e :grafoPriorita.incomingEdgesOf(foglia)) //sarà solo 1
-			grafoPriorita.setEdgeWeight(e, getJoinWeight(grafoPriorita.getEdgeSource(e), foglia, mappaWeight, mappaWhere, jsonUtili));
-	}
-
-
-
-	public static int getJoinWeight(String padre, String figlio, Map<String, Integer> mappaWeight,Map<String, List<List<String>>> mappaWhere, Map<String, JsonObject> jsonUtili){
-		int weight = 0;
-		for(int i=0; i<mappaWhere.get(padre).size(); i++){
-			List<String> condizione = mappaWhere.get(padre).get(i);
-			String parametroJoin = condizione.get(1);
-			if(parametroJoin.split("\\.")[0].equals(figlio)){
-				if(parametroJoin.equals(jsonUtili.get(figlio).getAsJsonObject().get("primarykey")))
-					weight = mappaWeight.get(padre);
-				else
-					weight = mappaWeight.get(padre)*mappaWeight.get(figlio);
-			}
-		}
-		return weight;
-	}
-
-
-
-
-	public static List<String> getFigli(String tabella, Map<String, List<List<String>>> mappaWhere, List<String> tabelle){
+	private static List<String> getFigli(String tabella, Map<String, List<List<String>>> mappaWhere, List<String> tabelle){
 		List<String> figli = new LinkedList<>();
 		List<List<String>> condizioniTabella = mappaWhere.get(tabella);
 		for(int i=0; i<condizioniTabella.size(); i++){
@@ -242,26 +108,7 @@ public class CaricatoreJSON {
 		}
 		return figli;
 	}
-
-	//DA LEVARE MAPPAWHERE E GLI ALTRI PARAMETRI INUTILI CHE VERRANNO CAMBIATI UNA VOLTA CHE CAMBIERA' GESTOREQUERY
-	private static Map<String, Integer> getMappaWeight(List<String> tabelle, Map<String, JsonObject> jsonUtili, GestoreQuery gestoreQuery, Map<String, List<List<String>>> mappaWhere) throws Exception {
-		Map<String, Integer> mappaWeight = new HashMap<>();
-		for(String tabella : tabelle){
-			String query;
-			if(jsonUtili.get(tabella).get("database").equals("postgreSQL"))
-				query = "SELECT COUNT (*) FROM "+tabella;
-			if(jsonUtili.get(tabella).get("database").equals("neo4j"))
-				query = "START n=node(*) MATCH (n:"+tabella+") RETURN count(n)";
-			if(jsonUtili.get(tabella).get("database").equals("mongoDB"))
-				query = "db."+tabella+".count()";
-			JsonArray results = gestoreQuery.esegui(jsonUtili.get(tabella), null, jsonUtili, mappaWhere); //magari fai anche un metodo a parte solo per i count dentro GestoreQuery per farlo più veloce
-			int weight = results.get(0).getAsInt();                                                       //anche perchè la query non la fa con count da solo
-			mappaWeight.put(tabella, weight);
-		}
-		return mappaWeight;
-	}
-
-
+	
 	private static boolean allEquals(List<String> tabelle) {
 		boolean allEqual = true;
 		for (String s : tabelle) {
@@ -271,7 +118,7 @@ public class CaricatoreJSON {
 		return allEqual;
 	}
 
-	public SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> getGrafoPrioritaCompatto(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<String>> mappaDB){
+	private SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> getGrafoPrioritaCompatto(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<String>> mappaDB){
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		List<DefaultWeightedEdge> archiUtili = new LinkedList<>();
 		for(String db : mappaDB.keySet()){
@@ -321,7 +168,6 @@ public class CaricatoreJSON {
 		return grafoPrioritaCompatto;
 	}
 
-
 	private static void addDiscendentiStessoDB(List<String> nodoNuovoGrafo, String nodoCorrente, String db, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili) {
 		Set<DefaultWeightedEdge> archi = grafoPriorita.outgoingEdgesOf(nodoCorrente);
 		if(archi==null)
@@ -350,7 +196,7 @@ public class CaricatoreJSON {
 		return mappaDB;
 	}
 
-	public SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> copiaGrafo (SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPriorita){
+	private SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> copiaGrafo (SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPriorita){
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> copia = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		for(List<String> nodo : grafoPriorita.vertexSet()){
 			List<String> nuovoNodo = new LinkedList<>(nodo);
@@ -362,7 +208,7 @@ public class CaricatoreJSON {
 		return copia;
 	}
 
-	public QueryParser identificatoreQuery(String query) throws MalformedQueryException	{
+	private QueryParser identificatoreQuery(String query) throws MalformedQueryException	{
 		if (query.toLowerCase().startsWith("select"))
 			return new ParserSql();
 		else if (query.toLowerCase().startsWith("match"))
@@ -378,7 +224,6 @@ public class CaricatoreJSON {
 		parser.spezza(query);
 		return parser;
 	}
-
 
 	private JsonArray effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati,
 			Map<String, List<String>> mappaSelect, List<String> radice) {
@@ -411,7 +256,7 @@ public class CaricatoreJSON {
 	}
 
 
-	public void run(String query) throws Exception {
+	private void run(String query) throws Exception {
 
 		QueryParser parser = this.parseQuery(query);		
 		FabbricatoreMappaStatement fabbricatoreMappe = new FabbricatoreMappaStatement();
