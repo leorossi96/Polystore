@@ -33,7 +33,6 @@ public class WorkflowManager {
 				grafoCopia.removeVertex(foglia);
 			}
 		}
-		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
 		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
 	}
 
@@ -54,7 +53,6 @@ public class WorkflowManager {
 			if(nodoSuCuiFareProiezioni){
 				List<List<String>> path = new DijkstraShortestPath(grafoPrioritaCompatto, radice, nodo).getPath().getVertexList();
 				List<String> fkUtili = new LinkedList<>();
-				System.out.println("PATH CORRENTE = "+path.toString());
 				if(path.size() == 2){
 					List<String> nodoPath = path.get(0);
 					List<String> nextNodoPath = path.get(1);
@@ -62,7 +60,6 @@ public class WorkflowManager {
 					for(JsonElement je : risultati){
 						JsonObject jo = je.getAsJsonObject();
 						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
-						System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
 					}
 					eseguiQueryProiezione(fkUtili, nextNodoPath, null, mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 				}
@@ -75,7 +72,6 @@ public class WorkflowManager {
 						for(JsonElement je : risultati){
 							JsonObject jo = je.getAsJsonObject();
 							fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
-							System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
 						}
 						eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 						fkUtili.clear();
@@ -87,7 +83,6 @@ public class WorkflowManager {
 					for(JsonElement je : risultati){
 						JsonObject jo = je.getAsJsonObject();
 						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
-						System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
 					}
 					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 				}

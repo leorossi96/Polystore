@@ -59,6 +59,7 @@ public class ResultCleaner {
 		String r2 = "["+r+"]";
 		JsonReader j = new JsonReader(new StringReader(r2));
 		j.setLenient(true);
+		System.out.println(r2.toString());
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 

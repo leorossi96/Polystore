@@ -58,10 +58,15 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 					queryRiscritta.append("WHERE 1=1\n");
 				}
 				else if(!mappaWhere.keySet().contains(primaParolaParametro))
-					queryRiscritta.append("AND "+condizione.get(0)+" = "+condizione.get(1)+"\n");
+					queryRiscritta.append("AND "+condizione.get(0)+" = "+"'"+condizione.get(1)+"'"+"\n");
 				else {
-					if(!this.condizioneStringente(mappaWhere, nodo.get(i), condizione.get(0)))
-						queryRiscritta.append("AND "+condizione.get(0)+" IN "+mappaArrayFkFigli.get(condizione.get(1).toString())+"\n");
+					if(!this.condizioneStringente(mappaWhere, nodo.get(i), condizione.get(0))){
+						List<String> fkUtili = new LinkedList<>();
+						for(String s: mappaArrayFkFigli.get(condizione.get(1).toString())){
+							fkUtili.add("'"+s+"'");
+						}
+						queryRiscritta.append("AND "+condizione.get(0)+" IN "+fkUtili.toString()+"\n");
+					}
 				}
 			}
 		}
