@@ -23,8 +23,10 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto,
 			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita)
 					throws Exception {
-		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); //address.address_id ->["1","2"], customer.customer_id ->["4","9"]
 
+		final long startTime = System.currentTimeMillis();
+		
+		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); 
 		System.out.println("MAPPA ARRAY FK FIGLI = "+ mappaArrayFkFigli.toString());
 		StringBuilder queryRiscritta = new StringBuilder();
 		boolean isFiglio = true;
@@ -91,7 +93,9 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
-		mappaRisultati.put(nodo, risutatiFormaCorretta);		
+		mappaRisultati.put(nodo, risutatiFormaCorretta);
+		final long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000);
 	}
 
 	@Override

@@ -25,7 +25,6 @@ public class FabbricatoreMappaStatement {
 			mappaWhere.put(tabella, new LinkedList<List<String>>());
 		}
 
-
 		for(List<String> rigaMatrice: matriceWhere){
 			String tabellaPrimaCondizione = rigaMatrice.get(0).split("\\.")[0];
 			String tabellaSecondaCondizione = rigaMatrice.get(1).split("\\.")[0];

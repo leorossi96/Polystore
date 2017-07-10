@@ -38,6 +38,8 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 
+		final long startTime = System.currentTimeMillis();
+		
 		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		StringBuilder queryRiscritta = new StringBuilder();
@@ -84,8 +86,9 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		JsonArray risultati = eseguiQueryDirettamente(querySQL);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
+		final long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Tempo impiegato query SQL " + elapsedTime/1000);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
-
 	}
 
 	@Override
@@ -124,7 +127,6 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 			}
 		}
 
-
 		for(int z=0; z<nextNodoPath.size()-1; z++)
 			queryProiezione.append(nextNodoPath.get(z)+",\n");
 		queryProiezione.append(nextNodoPath.get(nextNodoPath.size()-1)+"\nWHERE\n1=1\n");
@@ -154,11 +156,10 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		String query = queryProiezione.toString();
 		System.out.println("\nQUERY PROIEZIONE SQL =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
-		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
-
 
 	private JsonArray eseguiQueryDirettamente(String query) throws Exception{
 		ResultSet risultatoResultSet = new RelationalDao().interroga(query);

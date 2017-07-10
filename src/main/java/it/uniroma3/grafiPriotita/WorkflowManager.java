@@ -113,7 +113,6 @@ public class WorkflowManager {
 		costruttoreQuery.eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath, mappaWhere, mappaSelect, mappaRisultati);
 	}
 
-
 	private void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo, Map<String, JsonObject> jsonUtili,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 		CostruttoreQuery costruttoreQuery = null;
