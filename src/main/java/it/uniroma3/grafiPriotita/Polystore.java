@@ -147,7 +147,7 @@ public class Polystore {
 //		String query = "db.rental.find({'rental.customer_id'=1})";
 //		String query = "SELECT * FROM inventory";
 		String query = "SELECT rental.rental_id, payment.amount, customer.first_name, customer.last_name, film.title FROM payment, rental, customer, inventory, film, store, address, city, country WHERE payment.rental_id = rental.rental_id AND customer.customer_id = rental.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND store.store_id = inventory.store_id AND customer.address_id = address.address_id AND address.city_id = city.city_id AND country.country_id = city.country_id";
-		
+	
 //		String query = "SELECT customer.first_name FROM customer, address WHERE customer.address_id = address.address_id";
 //		String query = "SELECT customer.first_name, customer.last_name, payment.amount, address.address FROM rental, payment, customer, address WHERE rental.rental_id = payment.rental_id AND customer.customer_id = rental.customer_id AND customer.address_id = address.address_id";
 		new Polystore().run(query);
