@@ -96,12 +96,16 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000.0);
+		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
+
 	}
 
 	@Override
 	public void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception {
+		
+		final long startTime = System.currentTimeMillis();
 
 		boolean isFiglio = false;
 		boolean joinRisultati = false;
@@ -175,7 +179,8 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, null, campiDaSelezionareDelNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
-
+		final long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000.0);
 	}
 
 	private boolean condizioneStringente(Map<String, List<List<String>>> mappaWhere, String tabellaCorrente, String valoreCondizione) {

@@ -118,6 +118,9 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception{
+		
+		final long startTime = System.currentTimeMillis();
+
 		StringBuilder queryProiezione = new StringBuilder();
 		queryProiezione.append("SELECT ");
 		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
@@ -181,6 +184,8 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
+		final long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Tempo impiegato query SQL " + elapsedTime/1000.0);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 

@@ -94,6 +94,9 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception{
+		
+		final long startTime = System.currentTimeMillis();
+
 		StringBuilder queryProiezione = new StringBuilder();
 		queryProiezione.append("SELECT ");
 		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
@@ -153,10 +156,12 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE SQL =\n"+query);
+		System.out.println("\nQUERY PROIEZIONE MONGO =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
+		final long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("Tempo impiegato query Mongo " + elapsedTime/1000.0);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 	/**
