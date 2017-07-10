@@ -1,6 +1,7 @@
 package it.uniroma3.costruttoreQuery;
 
 import java.sql.ResultSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -43,13 +44,35 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		StringBuilder queryRiscritta = new StringBuilder();
+		List<String> listaProiezioniNodo = new LinkedList<>();
 		if(campoSelect == null){ //è la radice
-			queryRiscritta.append("SELECT ");
-			for(int i=0; i<nodo.size()-1; i++){
-				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
+			queryRiscritta.append("SELECT\n");
+			for(String tabella : nodo){
+				if(mappaSelect.get(tabella) != null && !mappaSelect.get(tabella).get(0).equals("*"))
+					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
 			}
-			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
-		}else
+			if(listaProiezioniNodo.isEmpty()){
+				queryRiscritta.append("*\nFROM\n");
+			}
+			else{ // sono nella radice e ho delle proiezioni da applicare
+				if(!grafoPrioritaCompatto.outgoingEdgesOf(nodo).isEmpty()){ //ha dei figli
+					for(String tabella: nodo){
+						Iterator<DefaultWeightedEdge> i = grafoPriorita.outgoingEdgesOf(tabella).iterator();
+						while(i.hasNext()){
+							String tabellaFiglio = grafoPriorita.getEdgeTarget(i.next());
+							if(!nodo.contains(tabellaFiglio))
+								listaProiezioniNodo.add(tabella+"."+tabellaFiglio+"_id"); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
+						}
+					}
+				}
+					queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
+			}
+		}
+//			for(int i=0; i<nodo.size()-1; i++){
+//				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
+//			}
+//			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
+		else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
 
 		int i = 0; //contatore di risultati con cui fare join
@@ -87,7 +110,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
-		System.out.println("Tempo impiegato query SQL " + elapsedTime/1000);
+		System.out.println("Tempo impiegato query SQL " + elapsedTime/1000.0);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 

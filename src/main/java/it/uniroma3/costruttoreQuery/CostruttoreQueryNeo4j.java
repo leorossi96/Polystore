@@ -75,7 +75,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 				}
 				queryRiscritta.append(nodo.get(nodo.size()-1)+" : "+nodo.get(nodo.size()-1)+" }\n");
 			}
-			else{ // sono nella radice e ho delle condizioni da applicare
+			else{ // sono nella radice e ho delle proiezioni da applicare
 				if(!grafoPrioritaCompatto.outgoingEdgesOf(nodo).isEmpty()){ //ha dei figli
 					for(String tabella: nodo){
 						Iterator<DefaultWeightedEdge> i = grafoPriorita.outgoingEdgesOf(tabella).iterator();
@@ -85,8 +85,8 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 								listaProiezioniNodo.add(tabella+"."+tabellaFiglio+"_id"); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
 						}
 					}
-					queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
 				}
+					queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
 			}
 		}
 		String queryNeo4j = queryRiscritta.toString();
@@ -95,7 +95,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
-		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000);
+		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000.0);
 	}
 
 	@Override

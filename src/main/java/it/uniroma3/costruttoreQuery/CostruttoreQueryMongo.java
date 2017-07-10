@@ -2,6 +2,7 @@ package it.uniroma3.costruttoreQuery;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,30 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); 
 		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
+		List<String> listaProiezioniNodo = new LinkedList<>();
 		StringBuilder queryRiscritta = new StringBuilder();
-		if(campoSelect == null){ //mi trovo nella radice
-			for(int i=0; i<nodo.size()-1; i++){
-				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
+		if(campoSelect == null){ //è la radice
+			queryRiscritta.append("SELECT\n");
+			for(String tabella : nodo){
+				if(mappaSelect.get(tabella) != null && !mappaSelect.get(tabella).get(0).equals("*"))
+					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
 			}
-			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
+			if(listaProiezioniNodo.isEmpty()){
+				queryRiscritta.append("*\nFROM\n");
+			}
+			else{ // sono nella radice e ho delle proiezioni da applicare
+				if(!grafoPrioritaCompatto.outgoingEdgesOf(nodo).isEmpty()){ //ha dei figli
+					for(String tabella: nodo){
+						Iterator<DefaultWeightedEdge> i = grafoPriorita.outgoingEdgesOf(tabella).iterator();
+						while(i.hasNext()){
+							String tabellaFiglio = grafoPriorita.getEdgeTarget(i.next());
+							if(!nodo.contains(tabellaFiglio))
+								listaProiezioniNodo.add(tabella+"."+tabellaFiglio+"_id"); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
+						}
+					}
+				}
+					queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
+			}
 		}else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
 
@@ -66,7 +85,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
-		System.out.println("Tempo impiegato query Mongo " + elapsedTime/1000);
+		System.out.println("Tempo impiegato query Mongo " + elapsedTime/1000.0);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
@@ -98,13 +117,14 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 				queryProiezione.append("*\nFROM\n");
 			}
 			else{
+				if(!campiDaSelezionareDelNodo.contains(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id")) 
+					campiDaSelezionareDelNodo.add(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"); // per permettermi di comporre il risultato finale in seguito
 				for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
 					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
 				}
 				queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+"\nFROM\n");
 			}
 		}
-
 
 		for(int z=0; z<nextNodoPath.size()-1; z++)
 			queryProiezione.append(nextNodoPath.get(z)+",\n");
@@ -122,14 +142,23 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		}
 		if(fkUtili!=null)
 			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
+			for(String tabella: nextNodoPath){
+				List<String> fkUtiliCampoRadice = new LinkedList<>();
+				for(JsonElement je : mappaRisultati.get(nextNodoPath)){
+					JsonObject jo = je.getAsJsonObject();
+					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
+				}
+				queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
+			}
+		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE MONGO =\n"+query);
+		System.out.println("\nQUERY PROIEZIONE SQL =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
-		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
-
 	/**
 	 * creo una mappa che ha come chiave il nome della fk dei figli e come valore la lista delle fk da unsare nella funzione IN  
 	 */
