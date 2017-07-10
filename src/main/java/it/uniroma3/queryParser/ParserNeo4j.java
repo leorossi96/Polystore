@@ -12,10 +12,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class ParserNeo4j implements QueryParser{
+	
 	private List<String> listaProiezioni;
 	private List<String> tableList;
 	private List<List<String>> matriceWhere;
-
 
 	@Override
 	public void spezza(String cypherQuery) throws JSQLParserException, FileNotFoundException{	
@@ -95,4 +95,3 @@ public class ParserNeo4j implements QueryParser{
 	}
 
 }
-

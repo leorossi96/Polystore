@@ -1,15 +1,10 @@
 package it.uniroma3.grafiPriotita;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -17,8 +12,6 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import it.uniroma3.exeptions.MalformedQueryException;
 import it.uniroma3.queryParser.ParserMongo;
 import it.uniroma3.queryParser.ParserNeo4j;
@@ -26,48 +19,6 @@ import it.uniroma3.queryParser.ParserSql;
 import it.uniroma3.queryParser.QueryParser;
 
 public class Polystore {
-	
-
-
-
-	/*      ************************************* NON USATO *************************************
-	public static List<String> getTabellaPrioritaAlta(List<String> tabelle, Map<String, JsonObject> jsonUtili) {
-
-		if (tabelle.size()==1)
-			return tabelle;
-		List<String> tabellePreferite = new LinkedList<>();
-		if (allEquals(tabelle) == true){
-			tabellePreferite.add(tabelle.get(0));		
-		}
-		for(int i=0; i<tabelle.size();i++){
-			JsonObject oggetto = jsonUtili.get(tabelle.get(i)); //es customer
-			JsonArray knows = oggetto.get("knows").getAsJsonArray(); //es store e address
-			for(int j=0; j<tabelle.size();j++){
-				String tabella = tabelle.get(j);//customer
-				for (int y=0; y<knows.size();y++){
-					JsonObject tableKnows = knows.get(y).getAsJsonObject();//es store
-					if (tableKnows.get("table").getAsString().equals(tabella)){//vuol dire che la conosce
-						String tabellaPreferita = oggetto.get("table").getAsString();
-						tabellePreferite.add(tabellaPreferita);		
-					}
-				}
-			}
-		}	
-		while(tabellePreferite.size()>1){
-			tabellePreferite = getTabellaPrioritaAlta(tabellePreferite, jsonUtili);
-		}
-		return tabellePreferite;
-	}
-
-	private static boolean allEquals(List<String> tabelle) {
-		boolean allEquals = true;
-		for (String s : tabelle) {
-			if(!s.equals(tabelle.get(0)))
-				allEquals = false;
-		}
-		return allEquals;
-	}
-	*/	
 
 	/**
 	 * 
@@ -147,7 +98,6 @@ public class Polystore {
 		return mappaRisultati.get(radice);
 	}
 
-
 	public void run(String query) throws Exception {
 
 		QueryParser parser = this.getParser(query);	
@@ -161,7 +111,6 @@ public class Polystore {
 		System.out.println("json scaricati: \n" + jsonUtili + "\n");
 		Map<String, List<String>> mappaSelect = fabbricatoreMappe.creaMappaSelect(listaProiezioni, jsonUtili);
 		System.out.println("lista proiezioni = "+listaProiezioni.toString());
-
 
 		Map<String, List<List<String>>> mappaWhere = fabbricatoreMappe.creaMappaWhere(matriceWhere, jsonUtili);
 		System.out.println("mappaWhere :"+ mappaWhere.toString()+"\n");
@@ -181,7 +130,6 @@ public class Polystore {
 		
 		List<String> radice = fabbricatoreAlberoEsecuzione.getRadice(grafoPrioritaCompatto);
 
-
 		Map<List<String>, JsonArray> mappaRisultati = new HashMap<>();
 
 		WorkflowManager workflowManager = new WorkflowManager();
@@ -191,5 +139,14 @@ public class Polystore {
 		System.out.println("MAPPA RISULTATI DOPO LE PROIEZIONI = "+mappaRisultati.toString());
 		JsonArray risultato = this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect, radice, listaProiezioni); //metodo che unisce i jsonArray nella mappaRisultati
 		System.out.println("\n\nRISULTATO FINALE =\n"+risultato.toString());
+	}
+	
+	public static void main (String[]args) throws Exception{
+//		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id FROM rental, customer, address, city WHERE city.city = 'Roma' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
+		String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
+//		String query = "db.rental.find({'rental.customer_id'=1})";
+//		String query = "SELECT * FROM inventory";
+//		String query = "SELECT customer.first_name, customer.last_name, payment.amount, address.address FROM rental, payment, customer, address WHERE rental.rental_id = payment.rental_id AND customer.customer_id = rental.customer_id AND customer.address_id = address.address_id";
+		new Polystore().run(query);
 	}
 }

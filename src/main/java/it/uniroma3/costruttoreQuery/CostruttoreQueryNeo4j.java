@@ -66,11 +66,6 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		if(isFiglio)
 			queryRiscritta.append("RETURN DISTINCT "+campoReturn);
 		else {
-			//			queryRiscritta.append("RETURN ");
-			//			for(int i=0; i<nodo.size()-1; i++){
-			//				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
-			//			}
-			//			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id");
 			if(listaProiezioniNodo.isEmpty()){
 				queryRiscritta.append("RETURN { ");
 				for(int n=0; n<nodo.size()-1; n++){
@@ -88,12 +83,6 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 								listaProiezioniNodo.add(tabella+"."+tabellaFiglio+"_id"); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
 						}
 					}
-					//				List<String> chiaviPerIFigli = new LinkedList<>();
-					//				for(String tabella: nodo){
-					//					chiaviPerIFigli.add(tabella+"."+tabella+"_id");
-					//				}
-					//				if(!listaProiezioniNodo.containsAll(chiaviPerIFigli))
-					//					listaProiezioniNodo.addAll(chiaviPerIFigli);
 					queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
 				}
 			}
@@ -200,7 +189,6 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		}
 		return piùStringente;
 	}
-
 
 	/**
 	 * creo una mappa che ha come chiave il nome della fk dei figli e come valore la lista delle fk da unsare nella funzione IN 

@@ -12,7 +12,6 @@ import com.google.gson.JsonParser;
 
 public class CaricatoreJson {
 
-	
 	/**
 	 * Carica da file i json utili in base alle tabelle
 	 * @param listaFrom Tabelle di partenza
@@ -38,10 +37,6 @@ public class CaricatoreJson {
 		scanner.close();
 		return jsonUtili;
 	}
-	
-	
-	
-
 
 }
 	

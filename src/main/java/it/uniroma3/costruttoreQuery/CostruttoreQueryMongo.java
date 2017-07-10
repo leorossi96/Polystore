@@ -34,16 +34,6 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
 			}
 			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
-//			List<String> listaProiezioniNodo = new LinkedList<>();
-//			for(String tabella : nodo){
-//				if(mappaSelect.get(tabella) != null)
-//					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
-//			}
-//			queryRiscritta.append("SELECT ");
-//			if(listaProiezioniNodo.isEmpty())
-//				queryRiscritta.append("*\nFROM\n");
-//			else
-//				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
 		}else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
 
@@ -72,7 +62,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		String queryMongo = queryRiscritta.toString();
 		System.out.println("QUERY MONGO : \n"+queryMongo);
 		JsonArray risultati = eseguiQueryDirettamente(queryMongo);
-		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQLMongo(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
@@ -132,7 +122,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		String query = queryProiezione.toString();
 		System.out.println("\nQUERY PROIEZIONE MONGO =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
-		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQLMongo(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}

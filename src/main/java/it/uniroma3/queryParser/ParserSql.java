@@ -13,10 +13,10 @@ import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 
 public class ParserSql implements QueryParser{
+	
 	private List<String> listaTabelle;
 	private List<String> listaProiezioni;
 	private List<List<String>> matriceWhere;
-	
 	
 	@Override
 	public void spezza(String querySQL) throws JSQLParserException{

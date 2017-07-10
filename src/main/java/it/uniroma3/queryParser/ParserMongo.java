@@ -17,11 +17,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class ParserMongo implements QueryParser {
+
 	private List<String> tabelle;
 	private List<String> listaProiezioni;
 	private List<List<String>> matriceWhere;
-	
-
 
 	public ParserMongo() {
 		this.tabelle = new LinkedList<>();
@@ -63,9 +62,6 @@ public class ParserMongo implements QueryParser {
 			nuovaMatriceWhere.add(condizione);
 		}
 		matriceWhere = nuovaMatriceWhere;
-//		for (List<String> condizione : this.matriceWhere){
-//			condizione.add("=");
-//		}
 		return matriceWhere;
 	}
 
@@ -98,7 +94,6 @@ public class ParserMongo implements QueryParser {
 
 	}
 
-
 	private void aggiornamentoTabelleECondizioni(List<List<String>> matriceWhere, String tabella, JsonObject myJson) throws FileNotFoundException {
 
 		//trasformo il jsonObject in una mappa
@@ -114,18 +109,12 @@ public class ParserMongo implements QueryParser {
 			rigaMatrice.add(att.getValue().toString());
 			this.matriceWhere.add(rigaMatrice);	
 		}
-
-		//System.out.println("OGGETTO DA STUDIARE: " +myJson);
-		//serve solo per il metodo di dopo (caricaJSON di caricatore) e non caricare tutti i json
 		List<String> tabelleAppoggio = new LinkedList<>();
 		tabelleAppoggio.add(tabella);
 		JsonObject nuovoJson = null;
-		//System.out.println(tabella);
 		CaricatoreJson caricatoreJson = new CaricatoreJson();
-//		polystore.caricaJSON(tabelleAppoggio);//carico da file i json utili in base alle tabelle
 		Map<String, JsonObject> jsonUtili = caricatoreJson.caricaJSON(tabelleAppoggio);//carico da file i json utili in base alle tabelle
 		JsonObject tabellaInformazioni = jsonUtili.get(tabella);
-		//System.out.println(jsonUtili.toString());
 		JsonArray tabelleCheConosce = tabellaInformazioni.get("knows").getAsJsonArray();
 		for (int i=0; i<tabelleCheConosce.size();i++){
 			String tabellaCheConosce = tabelleCheConosce.get(i).getAsJsonObject().get("table").getAsString();
@@ -133,14 +122,10 @@ public class ParserMongo implements QueryParser {
 			List<List<String>> matriceWhereCopia = new LinkedList<>(matriceWhere);
 			for(List<String> condizione : matriceWhereCopia){
 				List<String> nuovaCondizione = new LinkedList<>();
-				//System.out.println("TABELLA CHE CONOSCE: "+tabellaCheConosce);
-				//System.out.println("CONDIZIONE: "+condizione.get(0));
 				if((condizione.get(0).equals(tabellaCheConosce)) && myJson.get(tabellaCheConosce)!=null){ //se ho dei join, saranno espressi in mongo come jsonObject
 					rimuoviElemento(tabellaCheConosce, this.matriceWhere);
-					//System.out.println("MYJSON: " + myJson.toString());
 					nuovoJson = myJson.get(tabellaCheConosce).getAsJsonObject();
 					this.tabelle.add(tabellaCheConosce);
-//					polystore.caricaJSON(this.tabelle);
 					jsonUtili = caricatoreJson.caricaJSON(this.tabelle);
 					String pkTabellaCheConosce = jsonUtili.get(tabellaCheConosce).get("primarykey").getAsString();
 					nuovaCondizione.add(foreignKey);
@@ -154,9 +139,6 @@ public class ParserMongo implements QueryParser {
 
 	}
 
-
-
-
 	private void rimuoviElemento(String tabellaCheConosce, List<List<String>> matriceWhere2) {
 		int i=0;
 		int iteratore=0;
@@ -165,12 +147,9 @@ public class ParserMongo implements QueryParser {
 				iteratore = i;
 			i++;
 		}
-		//System.out.println("ITERATORE: "+iteratore);
-		//System.out.println("MATRICE WHERE: "+matriceWhere2.toString());
 		this.matriceWhere.remove(iteratore);
 
 	}
-
 
 	private String dammiTabella(String queryMongo){
 		String[] parti = queryMongo.split("\\.");
