@@ -21,7 +21,8 @@ public class ParserNeo4j implements QueryParser{
 	public void spezza(String cypherQuery) throws JSQLParserException, FileNotFoundException{	
 		//creo la lista from
 		this.tableList = new LinkedList<>(); 
-		File fileJSON = new File("/Users/leorossi/Desktop/fileJSON.txt");
+		ClassLoader classLoader = getClass().getClassLoader();
+		File fileJSON = new File(classLoader.getResource("fileJSON.txt").getFile());
 		Scanner scanner = new Scanner(fileJSON);
 		while (scanner.hasNextLine()) {			
 			String line = scanner.nextLine();

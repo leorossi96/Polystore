@@ -2,8 +2,10 @@ package it.uniroma3.json;
 
 import java.sql.ResultSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -26,9 +28,8 @@ public class Convertitore {
 						System.out.println("PROVA NO FIGLIO RITORNO TUTTI I CAMPI = "+parser.parse(resultSet.getObject(i + 1).toString()));
 						obj = (JsonObject) parser.parse(resultSet.getObject(i + 1).toString());
 					}
-					else{ //è il nodo radice e ho una selezioni dei campi da tornare 
-						  //PROBLEMA!!! IN QUESTO CASO AGGIUNGE LA STESSA RIGA DI RISULTATO N VOLTE CON N = numero di campi selezionati per quel nodo
-						  // prova query grande con SELECT ayment.amount, payment.payment_id, rental.rental_id , rental.customer_id FROM ...
+					else{ //è il nodo radice se mi trovo nella fase 1 dell'esecuzione o ho una selezioni dei campi da tornare se mi trovo nella fase 2 
+						// prova query grande con SELECT payment.amount, payment.payment_id, rental.rental_id , rental.customer_id FROM ...
 						StringBuilder rigaRisultato = new StringBuilder();
 						rigaRisultato.append("{");
 						for(int j = 0; j < listaProiezioniNodo.size()-1; j++){
@@ -41,13 +42,18 @@ public class Convertitore {
 						obj = (JsonObject) parser.parse(rigaRisultato.toString());
 					}
 				}
+				boolean inserisci = true;
+				for(JsonElement je : jsonArray)
+					if(je.getAsJsonObject().equals(obj) && inserisci)
+						inserisci = false;
+				if(inserisci)
 					jsonArray.add(obj);
 			}
 		}
 		return jsonArray;
 	}
 
-	public static JsonArray convertSQLToJson(ResultSet resultSet) throws Exception {
+	public static JsonArray convertSQLMongoToJson(ResultSet resultSet) throws Exception {
 		JsonArray jsonArray = new JsonArray();
 		while (resultSet.next()) {
 			int total_rows = resultSet.getMetaData().getColumnCount();

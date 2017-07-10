@@ -8,13 +8,13 @@ public class DataSourceNeo4j {
 
 	private static final String URI = "jdbc:neo4j:http://localhost";
 	private static final String USER_ID = "neo4j";
-	private static final String PWD = "password";
+	private static final String PASSWORD = "password";
 	private static Connection ISTANCE;
 
 	public static Connection getConnection() {
 		if (ISTANCE == null) {
 			try {
-				ISTANCE = DriverManager.getConnection(URI,USER_ID,PWD);
+				ISTANCE = DriverManager.getConnection(URI,USER_ID,PASSWORD);
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}

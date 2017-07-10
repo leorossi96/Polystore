@@ -4,18 +4,20 @@ import java.sql.ResultSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import it.uniroma3.json.Convertitore;
 import it.uniroma3.json.ResultCleaner;
 import it.uniroma3.persistence.postgres.RelationalDao;
 
-public class CostruttoreQuerySQL implements CostruttoreQuery{
+public class CostruttoreQuerySQL extends CostruttoreQuery{
 
 	/**
 	 * Esempio di opzione utilizzata per iniettare JSON in query SQL
@@ -36,20 +38,25 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 
-		String campoSelect = this.getForeingKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
+		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		StringBuilder queryRiscritta = new StringBuilder();
-		if(campoSelect == null){
-			List<String> listaProiezioniNodo = new LinkedList<>();
-			for(String tabella : nodo){
-				if(mappaSelect.get(tabella) != null)
-					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
-			}
+		if(campoSelect == null){ //è la radice
 			queryRiscritta.append("SELECT ");
-			if(listaProiezioniNodo.isEmpty())
-				queryRiscritta.append("*\nFROM\n");
-			else
-				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
+			for(int i=0; i<nodo.size()-1; i++){
+				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
+			}
+			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
+			//			List<String> listaProiezioniNodo = new LinkedList<>();
+			//			for(String tabella : nodo){
+			//				if(mappaSelect.get(tabella) != null)
+			//					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
+			//			}
+			//			queryRiscritta.append("SELECT ");
+			//			if(listaProiezioniNodo.isEmpty())
+			//				queryRiscritta.append("*\nFROM\n");
+			//			else
+			//				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
 		}else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
 
@@ -85,7 +92,7 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 		String querySQL = queryRiscritta.toString();
 		System.out.println("QUERY FINALE SQL : \n"+querySQL);
 		JsonArray risultati = eseguiQueryDirettamente(querySQL);
-		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQLMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
@@ -102,8 +109,8 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			if(mappaSelect.get(tabella) != null)
 				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
 		}
-		
-		if(campiDaSelezionareDelNodo.isEmpty()){//vuol dire che è un nodo del path di passaggio
+
+		if(nextNextNodoPath != null){//vuol dire che è un nodo del path di passaggio
 			String tabellaDiJoin = null;
 			for(String tabella : nextNodoPath){
 				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
@@ -114,18 +121,25 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0)+"_id\nFROM\n");
 		}
 		else{
-			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
-				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			if(campiDaSelezionareDelNodo.get(0).equals("*")){
+				queryProiezione.append("*\nFROM\n");
 			}
-			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+"\nFROM\n");
+			else{
+				if(!campiDaSelezionareDelNodo.contains(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id")) 
+					campiDaSelezionareDelNodo.add(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"); // per permettermi di comporre il risultato finale in seguito
+				for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+				}
+				queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+"\nFROM\n");
+			}
 		}
-		
-		
+
+
 		for(int z=0; z<nextNodoPath.size()-1; z++)
 			queryProiezione.append(nextNodoPath.get(z)+",\n");
 		queryProiezione.append(nextNodoPath.get(nextNodoPath.size()-1)+"\nWHERE\n1=1\n");
-		
-		
+
+
 		for (String tabella: nextNodoPath){
 			List<List<String>> condizioniTabella = mappaWhere.get(tabella);
 			for(int j=0; j<condizioniTabella.size(); j++){
@@ -135,37 +149,30 @@ public class CostruttoreQuerySQL implements CostruttoreQuery{
 					queryProiezione.append("AND " + condizione.get(0) + " = " + condizione.get(1) +"\n");
 			}
 		}
-		queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		if(fkUtili!=null)
+			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
+			for(String tabella: nextNodoPath){
+				List<String> fkUtiliCampoRadice = new LinkedList<>();
+				for(JsonElement je : mappaRisultati.get(nextNodoPath)){
+					JsonObject jo = je.getAsJsonObject();
+					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
+				}
+				queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
+			}
+		}
 		String query = queryProiezione.toString();
 		System.out.println("\nQUERY PROIEZIONE SQL =\n"+query);
 		JsonArray risultati = eseguiQueryDirettamente(query);
-		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
+		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQLMongo(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 
-	/**
-	 * 
-	 * @return La chiave esterna sulla quale il nodo padre effettua il join. Null altrimenti.
-	 */
-	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
-		String padre = null;
-		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
-			padre = grafoPriorita.getEdgeSource(arco);
-		}
-		if(padre != null){
-			for(List<String> condizioni : mappaWhere.get(padre)){
-				StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
-				if(st.nextToken().equals(nodo))
-					return condizioni.get(1);
-			}
-		}
-		return null;
-	}
 
 	private JsonArray eseguiQueryDirettamente(String query) throws Exception{
 		ResultSet risultatoResultSet = new RelationalDao().interroga(query);
-		JsonArray risultati = Convertitore.convertSQLToJson(risultatoResultSet);
+		JsonArray risultati = Convertitore.convertSQLMongoToJson(risultatoResultSet);
 		return risultati;
 	}
 }

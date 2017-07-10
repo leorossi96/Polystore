@@ -11,7 +11,7 @@ import com.google.gson.stream.JsonReader;
 
 public class ResultCleaner {
 	
-	public static JsonArray fromMongo(JsonArray ris) {
+	public static JsonArray fromSQLMongo(JsonArray ris) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<JsonElement> iterator = ris.iterator();
 		while (iterator.hasNext()) {

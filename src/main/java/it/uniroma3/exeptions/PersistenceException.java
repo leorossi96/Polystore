@@ -1,3 +1,4 @@
+/*       ************************************* NON USATO *************************************
 package it.uniroma3.exeptions;
 
 public class PersistenceException extends RuntimeException {
@@ -15,3 +16,4 @@ public class PersistenceException extends RuntimeException {
         super(message, cause);
     }
 }
+*/

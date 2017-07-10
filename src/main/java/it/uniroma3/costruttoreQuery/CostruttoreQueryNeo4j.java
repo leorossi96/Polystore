@@ -2,10 +2,10 @@ package it.uniroma3.costruttoreQuery;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -17,7 +17,7 @@ import it.uniroma3.json.Convertitore;
 import it.uniroma3.json.ResultCleaner;
 import it.uniroma3.persistence.neo4j.GraphDao;
 
-public class CostruttoreQueryNeo4j implements CostruttoreQuery {
+public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 
 	@Override
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto,
@@ -25,19 +25,22 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 					throws Exception {
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); //address.address_id ->["1","2"], customer.customer_id ->["4","9"]
 
-		System.out.println("MAPPA ARRAY FK FIGLI = "+mappaArrayFkFigli.toString());
+		System.out.println("MAPPA ARRAY FK FIGLI = "+ mappaArrayFkFigli.toString());
 		StringBuilder queryRiscritta = new StringBuilder();
 		boolean isFiglio = true;
 		boolean joinRisultati = false;
 		List<String> listaProiezioniNodo = new LinkedList<>();
-		String campoReturn = this.getForeingKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
-		if(campoReturn == null){
-			isFiglio = false;
+
+		String campoReturn = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
+		if(campoReturn == null){ // è la radice
+			isFiglio = false;	
 			for(String tabella : nodo){
-				if(mappaSelect.get(tabella) != null)
+				if(mappaSelect.get(tabella) != null && !mappaSelect.get(tabella).get(0).equals("*"))
 					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
 			}
 		}
+		else
+			listaProiezioniNodo.add(nodo.get(0)+"."+nodo.get(0)+"_id");
 
 		String tabellaPartenza = nodo.get(0);
 		queryRiscritta.append("MATCH ("+tabellaPartenza+" : "+tabellaPartenza+")\n");
@@ -63,6 +66,11 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		if(isFiglio)
 			queryRiscritta.append("RETURN DISTINCT "+campoReturn);
 		else {
+			//			queryRiscritta.append("RETURN ");
+			//			for(int i=0; i<nodo.size()-1; i++){
+			//				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
+			//			}
+			//			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id");
 			if(listaProiezioniNodo.isEmpty()){
 				queryRiscritta.append("RETURN { ");
 				for(int n=0; n<nodo.size()-1; n++){
@@ -70,11 +78,26 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 				}
 				queryRiscritta.append(nodo.get(nodo.size()-1)+" : "+nodo.get(nodo.size()-1)+" }\n");
 			}
-			else{
-				queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
+			else{ // sono nella radice e ho delle condizioni da applicare
+				if(!grafoPrioritaCompatto.outgoingEdgesOf(nodo).isEmpty()){ //ha dei figli
+					for(String tabella: nodo){
+						Iterator<DefaultWeightedEdge> i = grafoPriorita.outgoingEdgesOf(tabella).iterator();
+						while(i.hasNext()){
+							String tabellaFiglio = grafoPriorita.getEdgeTarget(i.next());
+							if(!nodo.contains(tabellaFiglio))
+								listaProiezioniNodo.add(tabella+"."+tabellaFiglio+"_id"); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
+						}
+					}
+					//				List<String> chiaviPerIFigli = new LinkedList<>();
+					//				for(String tabella: nodo){
+					//					chiaviPerIFigli.add(tabella+"."+tabella+"_id");
+					//				}
+					//				if(!listaProiezioniNodo.containsAll(chiaviPerIFigli))
+					//					listaProiezioniNodo.addAll(chiaviPerIFigli);
+					queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
+				}
 			}
 		}
-
 		String queryNeo4j = queryRiscritta.toString();
 		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
@@ -87,7 +110,7 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception {
 
-		boolean isFiglio = true;
+		boolean isFiglio = false;
 		boolean joinRisultati = false;
 		StringBuilder queryProiezione = new StringBuilder();
 		String tabellaPartenza = nextNodoPath.get(0);
@@ -107,8 +130,18 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 					queryProiezione.append("AND "+condizione.get(0)+" = "+condizione.get(1)+"\n");
 			}			
 		}
-		queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString()+"\n");	
-
+		if(fkUtili!=null)
+			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString()+"\n");	
+		else{//mi trovo nella radice nella seconda fase dell'esecuzione
+			for(String tabella: nextNodoPath){
+				List<String> fkUtiliCampoRadice = new LinkedList<>();
+				for(JsonElement je : mappaRisultati.get(nextNodoPath)){
+					JsonObject jo = je.getAsJsonObject();
+					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
+				}
+				queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString()+"\n");
+			}
+		}
 		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
 		queryProiezione.append("RETURN \n");
 		for(String tabella: nextNodoPath){
@@ -116,7 +149,7 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
 		}
 
-		if(campiDaSelezionareDelNodo.isEmpty()){//vuol dire che è un nodo del path di passaggio
+		if(nextNextNodoPath != null){//vuol dire che è un nodo del path di passaggio
 			String tabellaDiJoin = null;
 			for(String tabella : nextNodoPath){
 				for(List<String> condizioneTabella: mappaWhere.get(tabella)){
@@ -127,10 +160,21 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0));
 		}
 		else{
-			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
-				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			if(campiDaSelezionareDelNodo.get(0).equals("*")){
+				queryProiezione.append("{");
+				for(int n=0; n<nextNodoPath.size()-1; n++){
+					queryProiezione.append(nextNodoPath.get(n)+" : "+nextNodoPath.get(n)+", ");
+				}
+				queryProiezione.append(nextNodoPath.get(nextNodoPath.size()-1)+" : "+nextNodoPath.get(nextNodoPath.size()-1)+"}\n");
+				campiDaSelezionareDelNodo.clear();
+			}else{
+				if(!campiDaSelezionareDelNodo.contains(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id")) 
+					campiDaSelezionareDelNodo.add(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"); // per permettermi di comporre il risultato finale in seguito
+				for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+				}
+				queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1));
 			}
-			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1));
 		}
 
 		String queryNeo4j = queryProiezione.toString();
@@ -157,24 +201,6 @@ public class CostruttoreQueryNeo4j implements CostruttoreQuery {
 		return piùStringente;
 	}
 
-	/**
-	 * 
-	 * @return La chiave esterna sulla quale il nodo padre effettua il join. Null altrimenti.
-	 */
-	private String getForeingKeyNodo(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, String nodo, Map<String, List<List<String>>> mappaWhere) {
-		String padre = null;
-		for(DefaultWeightedEdge arco : grafoPriorita.incomingEdgesOf(nodo)){
-			padre = grafoPriorita.getEdgeSource(arco);
-		}
-		if(padre != null){
-			for(List<String> condizioni : mappaWhere.get(padre)){
-				StringTokenizer st = new StringTokenizer(condizioni.get(1), ".");
-				if(st.nextToken().equals(nodo))
-					return condizioni.get(1);
-			}
-		}
-		return null;
-	}
 
 	/**
 	 * creo una mappa che ha come chiave il nome della fk dei figli e come valore la lista delle fk da unsare nella funzione IN 

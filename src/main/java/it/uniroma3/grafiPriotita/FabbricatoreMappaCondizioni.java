@@ -1,4 +1,6 @@
-package it.uniroma3.grafiPriotita;
+/*      ************************************* NON USATO *************************************
+ package it.uniroma3.grafiPriotita;
+ 
 
 import java.io.FileNotFoundException;
 import java.net.UnknownHostException;
@@ -18,7 +20,7 @@ import com.google.gson.JsonObject;
  * a quella particolare tabella (key = tabelle da interrogare, value = condizioni associate
  * a quelle tabelle). ES: customer = [[customer.nome, mario],[customer.id_store,1]]
  *
- */
+ *
 public class FabbricatoreMappaCondizioni {
 	private Map<String, List<List<String>>> mappaWhere;
 	
@@ -31,7 +33,7 @@ public class FabbricatoreMappaCondizioni {
 	 * 
 	 * @param matriceWhere una collezione di condizioni ES:[[customer.nome, mario],[customer.id_store,1]]
 	 * @param jsonCheMiServono una collezione di JsonObject contenenti informazioni sulle tabelle da interrogare
-	 */
+	 *
 	public void creaMappaCondizioni(List<List<String>> matriceWhere, Map<String, JsonObject> jsonCheMiServono ) throws UnknownHostException, FileNotFoundException, JSQLParserException {
 		 
 	    JsonObject myjson = new JsonObject();
@@ -63,3 +65,4 @@ public class FabbricatoreMappaCondizioni {
 	}
 
 }
+*/
