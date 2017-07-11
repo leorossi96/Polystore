@@ -25,7 +25,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 					throws Exception {
 
 		final long startTime = System.currentTimeMillis();
-		
+
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); 
 		System.out.println("MAPPA ARRAY FK FIGLI = "+ mappaArrayFkFigli.toString());
 		StringBuilder queryRiscritta = new StringBuilder();
@@ -62,10 +62,14 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 				else {
 					if(!this.condizioneStringente(mappaWhere, nodo.get(i), condizione.get(0))){
 						List<String> fkUtili = new LinkedList<>();
-						for(String s: mappaArrayFkFigli.get(condizione.get(1).toString())){
-							fkUtili.add("'"+s+"'");
+						if(mappaArrayFkFigli.get(condizione.get(1)) != null){
+							for(String s: mappaArrayFkFigli.get(condizione.get(1).toString())){
+								fkUtili.add("'"+s+"'");
+							}
+							queryRiscritta.append("AND "+condizione.get(0)+" IN "+fkUtili.toString()+"\n");
 						}
-						queryRiscritta.append("AND "+condizione.get(0)+" IN "+fkUtili.toString()+"\n");
+					else
+						queryRiscritta.append("AND "+condizione.get(0)+" IN [ ]\n");
 					}
 				}
 			}
@@ -91,7 +95,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 						}
 					}
 				}
-					queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
+				queryRiscritta.append("RETURN "+listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), ""));
 			}
 		}
 		String queryNeo4j = queryRiscritta.toString();
@@ -109,7 +113,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 	public void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception {
-		
+
 		final long startTime = System.currentTimeMillis();
 
 		boolean isFiglio = false;

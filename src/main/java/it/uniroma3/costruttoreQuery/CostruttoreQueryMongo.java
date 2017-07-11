@@ -26,7 +26,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 					throws Exception {
 
 		final long startTime = System.currentTimeMillis();
-		
+
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); 
 		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
@@ -52,7 +52,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 						}
 					}
 				}
-					queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
+				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
 			}
 		}else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
@@ -89,12 +89,12 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
-	
+
 	@Override
 	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception{
-		
+
 		final long startTime = System.currentTimeMillis();
 
 		StringBuilder queryProiezione = new StringBuilder();
@@ -143,8 +143,13 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 					queryProiezione.append("AND " + condizione.get(0) + " = " + condizione.get(1) +"\n");
 			}
 		}
-		if(fkUtili!=null)
-			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		if(fkUtili!=null)	{
+			List<String> fkUtiliList = new LinkedList<>();
+			for(String s: fkUtili){
+				fkUtiliList.add("'"+s+"'");
+			}
+			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtiliList.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		}
 		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
 			for(String tabella: nextNodoPath){
 				List<String> fkUtiliCampoRadice = new LinkedList<>();
