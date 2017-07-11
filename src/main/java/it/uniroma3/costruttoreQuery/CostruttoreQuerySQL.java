@@ -40,7 +40,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita) throws Exception {
 
 		final long startTime = System.currentTimeMillis();
-		
+
 		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
 		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		StringBuilder queryRiscritta = new StringBuilder();
@@ -65,13 +65,13 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 						}
 					}
 				}
-					queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
+				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
 			}
 		}
-//			for(int i=0; i<nodo.size()-1; i++){
-//				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
-//			}
-//			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
+		//			for(int i=0; i<nodo.size()-1; i++){
+		//				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
+		//			}
+		//			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
 		else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
 
@@ -118,7 +118,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 	public void eseguiQueryProiezione (List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
 			Map<List<String>, JsonArray> mappaRisultati) throws Exception{
-		
+
 		final long startTime = System.currentTimeMillis();
 
 		StringBuilder queryProiezione = new StringBuilder();
@@ -169,6 +169,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		}
 		if(fkUtili!=null)
 			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+		
 		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
 			for(String tabella: nextNodoPath){
 				List<String> fkUtiliCampoRadice = new LinkedList<>();
@@ -176,7 +177,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 					JsonObject jo = je.getAsJsonObject();
 					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
 				}
-				queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
+					queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
 			}
 		}
 		String query = queryProiezione.toString();

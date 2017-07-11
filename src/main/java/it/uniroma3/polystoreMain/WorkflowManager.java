@@ -62,6 +62,8 @@ public class WorkflowManager {
 						JsonObject jo = je.getAsJsonObject();
 						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
 					}
+					if(fkUtili.isEmpty())
+						System.exit(0);
 					eseguiQueryProiezione(fkUtili, nextNodoPath, null, mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 				}
 				else{
@@ -74,6 +76,8 @@ public class WorkflowManager {
 							JsonObject jo = je.getAsJsonObject();
 							fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
 						}
+						if(fkUtili.isEmpty())
+							System.exit(0);
 						eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 						fkUtili.clear();
 					}
@@ -85,6 +89,8 @@ public class WorkflowManager {
 						JsonObject jo = je.getAsJsonObject();
 						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
 					}
+					if(fkUtili.isEmpty())
+						System.exit(0);
 					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 				}
 			}
