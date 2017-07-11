@@ -80,13 +80,13 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		}
 
 		String queryMongo = queryRiscritta.toString();
-		System.out.println("QUERY MONGO : \n"+queryMongo);
+//		System.out.println("QUERY MONGO : \n"+queryMongo);
 		JsonArray risultati = eseguiQueryDirettamente(queryMongo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query Mongo " + elapsedTime/1000.0);
-		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
+//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
 
@@ -144,11 +144,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		if(fkUtili!=null)	{
-			List<String> fkUtiliList = new LinkedList<>();
-			for(String s: fkUtili){
-				fkUtiliList.add("'"+s+"'");
-			}
-			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtiliList.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
+			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
 		}
 		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
 			for(String tabella: nextNodoPath){
@@ -161,13 +157,13 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE MONGO =\n"+query);
+		System.out.println("\nQUERY PROIEZIONE MONGO =\n");
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query Mongo " + elapsedTime/1000.0);
-		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
+//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 	/**
 	 * creo una mappa che ha come chiave il nome della fk dei figli e come valore la lista delle fk da unsare nella funzione IN  

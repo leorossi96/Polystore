@@ -37,7 +37,7 @@ public class ResultCleaner {
 					.replaceAll(Pattern.quote("}{"), "},{");
 		}
 		String r2 = "["+r+"]";
-		System.out.println("RISULTATI CORRETTI ="+r2); 
+//		System.out.println("RISULTATI CORRETTI ="+r2); 
 		JsonReader j = new JsonReader(new StringReader(r2));
 		j.setLenient(true);
 		return new JsonParser().parse(j).getAsJsonArray();
@@ -59,7 +59,7 @@ public class ResultCleaner {
 		String r2 = "["+r+"]";
 		JsonReader j = new JsonReader(new StringReader(r2));
 		j.setLenient(true);
-		System.out.println(r2.toString());
+//		System.out.println(r2.toString());
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 

@@ -99,13 +99,13 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 			}
 		}
 		String queryNeo4j = queryRiscritta.toString();
-		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
+//		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000.0);
-		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
+//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 
 	}
 
@@ -184,7 +184,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		}
 
 		String queryNeo4j = queryProiezione.toString();
-		System.out.println("QUERY NEO4J PROIEZIONE=\n"+ queryNeo4j);
+		System.out.println("QUERY NEO4J PROIEZIONE=\n");
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, null, campiDaSelezionareDelNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

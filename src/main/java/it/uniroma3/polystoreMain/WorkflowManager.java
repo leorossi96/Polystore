@@ -1,5 +1,6 @@
 package it.uniroma3.polystoreMain;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,59 +44,89 @@ public class WorkflowManager {
 		List<String> radice = fae.getRadice(grafoPrioritaCompatto);
 		Iterator<List<String>> i = grafoPrioritaCompatto.vertexSet().iterator();
 		List<String> nextNextNodoPath;
+		List<List<String>> listaNodiProiezione = new LinkedList<>();
 		while(i.hasNext()){
 			boolean nodoSuCuiFareProiezioni = false;
 			List<String> nodo = i.next();
+
 			for(String tabellaNodo : nodo){
 				if(!radice.get(0).equals(nodo.get(0)) && mappaSelect.keySet().contains(tabellaNodo)){
-					nodoSuCuiFareProiezioni = true;
+					listaNodiProiezione.add(nodo);
 				}
 			}
-			if(nodoSuCuiFareProiezioni){
-				List<List<String>> path = new DijkstraShortestPath(grafoPrioritaCompatto, radice, nodo).getPath().getVertexList();
-				List<String> fkUtili = new LinkedList<>();
-				if(path.size() == 2){
-					List<String> nodoPath = path.get(0);
-					List<String> nextNodoPath = path.get(1);
+		
+		}
+		System.out.println(listaNodiProiezione.toString());
+		Map<List<String>, List<List<String>>> mappaPathNodo = new HashMap<>();
+		List<List<String>> nodiProiettati = new LinkedList<>();
+		for(List<String> n : listaNodiProiezione){
+			List<List<String>> path = new DijkstraShortestPath(grafoPrioritaCompatto, radice, n).getPath().getVertexList();
+			mappaPathNodo.put(n, path);
+		}
+		for(List<String> n : mappaPathNodo.keySet())	{
+			List<List<String>> path= mappaPathNodo.get(n);
+			List<String> fkUtili = new LinkedList<>();
+
+			if(path.size() == 2){
+				List<String> nodoPath = path.get(0);
+				List<String> nextNodoPath = path.get(1);
+				JsonArray risultati = mappaRisultati.get(nodoPath);
+				for(JsonElement je : risultati){
+					JsonObject jo = je.getAsJsonObject();
+					fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+				}
+				if(fkUtili.isEmpty()){
+					System.out.println("Non ci sono risultati");
+					System.exit(0);
+				}	
+				if(!nodiProiettati.contains(nextNodoPath))	{
+					eseguiQueryProiezione(fkUtili, nextNodoPath, null, mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+					nodiProiettati.add(nextNodoPath);
+				}
+			}
+			else{
+				for(int j=0; j<path.size()-2; j++){
+					List<String> nodoPath = path.get(j);
+					List<String> nextNodoPath = path.get(j+1);
+					nextNextNodoPath = path.get(j+2);
 					JsonArray risultati = mappaRisultati.get(nodoPath);
 					for(JsonElement je : risultati){
 						JsonObject jo = je.getAsJsonObject();
 						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
 					}
-					if(fkUtili.isEmpty())
+					if(fkUtili.isEmpty())	{
+						System.out.println("Non ci sono risultati");
 						System.exit(0);
-					eseguiQueryProiezione(fkUtili, nextNodoPath, null, mappaRisultati, mappaDB, mappaWhere, mappaSelect);
-				}
-				else{
-					for(int j=0; j<path.size()-2; j++){
-						List<String> nodoPath = path.get(j);
-						List<String> nextNodoPath = path.get(j+1);
-						nextNextNodoPath = path.get(j+2);
-						JsonArray risultati = mappaRisultati.get(nodoPath);
-						for(JsonElement je : risultati){
-							JsonObject jo = je.getAsJsonObject();
-							fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
-						}
-						if(fkUtili.isEmpty())
-							System.exit(0);
+					}
+					if (!nodiProiettati.contains(nextNodoPath))	{
 						eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
 						fkUtili.clear();
+						nodiProiettati.add(nextNodoPath);
 					}
-					nextNextNodoPath = null;
-					List<String> nodoPath = path.get(path.size()-2);
-					List<String> nextNodoPath = path.get(path.size()-1);
-					JsonArray risultati = mappaRisultati.get(nodoPath);
-					for(JsonElement je : risultati){
-						JsonObject jo = je.getAsJsonObject();
-						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
-					}
-					if(fkUtili.isEmpty())
-						System.exit(0);
+				}
+				nextNextNodoPath = null;
+				List<String> nodoPath = path.get(path.size()-2);
+				List<String> nextNodoPath = path.get(path.size()-1);
+				JsonArray risultati = mappaRisultati.get(nodoPath);
+				for(JsonElement je : risultati){
+					JsonObject jo = je.getAsJsonObject();
+					fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+				}
+				if(fkUtili.isEmpty())	{
+					System.out.println("Non ci sono risultati");
+					System.exit(0);
+				}
+				if(!nodiProiettati.contains(nextNodoPath))	{
 					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+					nodiProiettati.add(nextNodoPath);
 				}
 			}
+
 		}
-	}
+	
+}
+
+
 
 
 	private void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
