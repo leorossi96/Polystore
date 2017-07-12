@@ -165,6 +165,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		System.out.println("Tempo impiegato query Mongo " + elapsedTime/1000.0);
 //		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
+	
 	/**
 	 * creo una mappa che ha come chiave il nome della fk dei figli e come valore la lista delle fk da unsare nella funzione IN  
 	 */

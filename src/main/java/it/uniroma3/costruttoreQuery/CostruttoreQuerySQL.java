@@ -68,10 +68,6 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 				queryRiscritta.append(listaProiezioniNodo.toString().replaceAll(Pattern.quote("["), "").replaceAll(Pattern.quote("]"), "")+"\nFROM\n");
 			}
 		}
-		//			for(int i=0; i<nodo.size()-1; i++){
-		//				queryRiscritta.append(nodo.get(i)+"."+nodo.get(i)+"_id"+", ");
-		//			}
-		//			queryRiscritta.append(nodo.get(nodo.size()-1)+"."+nodo.get(nodo.size()-1)+"_id"+"\nFROM\n");
 		else
 			queryRiscritta.append("SELECT DISTINCT "+campoSelect+"\nFROM\n");
 

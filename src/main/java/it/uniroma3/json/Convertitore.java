@@ -61,7 +61,7 @@ public class Convertitore {
 					obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), "");
 				}
 				else
-				obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getObject(i + 1).toString());
+					obj.addProperty(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getObject(i + 1).toString());
 			}
 			jsonArray.add(obj);
 		}

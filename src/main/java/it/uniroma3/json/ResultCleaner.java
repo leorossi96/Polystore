@@ -12,7 +12,8 @@ import com.google.gson.stream.JsonReader;
 public class ResultCleaner {
 	
 	public static JsonArray fromMongo(JsonArray ris) {
-		/*I risultati di una query mongo sono nella stessa forma dei risultati di una
+		/*
+		 * I risultati di una query mongo sono nella stessa forma dei risultati di una
 		 * query SQL. Per questo motivo viene utilizzato lo stesso ResultCleaner.
 		 */
 		return fromSQL(ris);
@@ -37,10 +38,7 @@ public class ResultCleaner {
 					.replaceAll(Pattern.quote("}{"), "},{");
 		}
 		String r2 = "["+r+"]";
-//		System.out.println("RISULTATI CORRETTI ="+r2); 
-		JsonReader j = new JsonReader(new StringReader(r2));
-		j.setLenient(true);
-		return new JsonParser().parse(j).getAsJsonArray();
+		return createJsonArray(r2);
 	}
 	
 	public static JsonArray fromSQL(JsonArray ris) {
@@ -57,9 +55,12 @@ public class ResultCleaner {
 				.replaceAll(Pattern.quote("}{"), "},{")
 				.replaceAll("([0-9]).0", "$1");
 		String r2 = "["+r+"]";
-		JsonReader j = new JsonReader(new StringReader(r2));
+		return createJsonArray(r2);
+	}
+	
+	private static JsonArray createJsonArray(String s) {
+		JsonReader j = new JsonReader(new StringReader(s));
 		j.setLenient(true);
-//		System.out.println(r2.toString());
 		return new JsonParser().parse(j).getAsJsonArray();
 	}
 

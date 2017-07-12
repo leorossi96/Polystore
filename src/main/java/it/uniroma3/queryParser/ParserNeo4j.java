@@ -64,9 +64,9 @@ public class ParserNeo4j implements QueryParser{
 			for (int i=0; i<partiReturn.length; i++){
 				this.listaProiezioni.add(partiReturn[i]);
 			}
-		}
-		
+		}	
 	}
+	
 	@Override
 	public List<String> getListaProiezioni() {
 		return listaProiezioni;

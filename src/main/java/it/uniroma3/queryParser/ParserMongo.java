@@ -135,8 +135,6 @@ public class ParserMongo implements QueryParser {
 				}
 			}
 		}
-
-
 	}
 
 	private void rimuoviElemento(String tabellaCheConosce, List<List<String>> matriceWhere2) {
