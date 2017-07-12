@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.glassfish.jersey.message.internal.TracingAwarePropertiesDelegate;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
@@ -45,17 +47,28 @@ public class Polystore {
 		return parser;
 	}
 
-	private void effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati) throws IOException {
+	private void effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaSelect) throws IOException {
 		List<String> paths = new LinkedList<>();
 		int i = 0;
 		String path = null;
 		JsonWriter writer = new JsonWriter();
-		for(JsonArray array : mappaRisultati.values()) {
-			path = "path"+i+".json"; //TODO inserire corretto
-			writer.writeArray(array, path);
-			i++;
-			paths.add(path);
+		List<List<String>> nodiRisultato = new LinkedList<>();
+		for(String tabellaProiezione : mappaSelect.keySet()){
+			for(List<String> nodo : mappaRisultati.keySet()) {
+				if(nodo.contains(tabellaProiezione) && !nodiRisultato.contains(nodo)){
+					nodiRisultato.add(nodo);
+					JsonArray array = mappaRisultati.get(nodo);
+					if (array.size()!=0){
+						System.out.println("PROVIENE DA: "+nodo.toString());
+						path = "/Users/mac/Desktop/json"+i+".json"; //TODO inserire corretto
+						writer.writeArray(array, path);
+						i++;
+						paths.add(path);
+					}
+				}
+			}
 		}
+
 		AggregatoreJson aggregatore = new AggregatoreJson();
 		aggregatore.join(paths);
 	}
@@ -96,22 +109,22 @@ public class Polystore {
 		WorkflowManager workflowManager = new WorkflowManager();
 		workflowManager.esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
 		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere);
-		System.out.println("avantiii");
-		this.effettuaJoinRisultatoFinale(mappaRisultati);
+		this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect);
 	}
 
 	public static void main (String[]args) throws Exception{
-		//		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
-		//		String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
+						String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
+		//				String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
 		//		String query = "SELECT * FROM language WHERE language.name = 'Tswana'";
 		//		String query = "SELECT city.city_id FROM city WHERE city.city = 'Lens'";
 		//		String query = "SELECT language.name FROM language WHERE language.name = 'Mongolian'";
 		//		String query = "SELECT * FROM category WHERE category.category_id = 100";
 		//		String query = "SELECT * FROM rental, payment WHERE rental.rental_id = payment.rental_id AND rental.inventory_id = 1";
-		//		String query = "SELECT rental.rental_id, payment.amount, customer.first_name, customer.last_name, film.title, store.store_id FROM payment, rental, customer, inventory, film, store, address, city, country WHERE payment.rental_id = rental.rental_id AND customer.customer_id = rental.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND store.store_id = inventory.store_id AND customer.address_id = address.address_id AND address.city_id = city.city_id AND country.country_id = city.country_id";
+//		String query = "SELECT rental.rental_id, payment.amount, customer.first_name, customer.last_name, film.title, store.store_id, store.manager_staff_id FROM payment, rental, customer, inventory, film, store, address, city, country WHERE payment.rental_id = rental.rental_id AND customer.customer_id = rental.customer_id AND rental.inventory_id = inventory.inventory_id AND inventory.film_id = film.film_id AND store.store_id = inventory.store_id AND customer.address_id = address.address_id AND address.city_id = city.city_id AND country.country_id = city.country_id";
 		//		String query = "SELECT customer.first_name, customer.last_name, address.address, address.address2 FROM customer, address WHERE customer.address_id = address.address_id";
 		//		String query = "SELECT customer.first_name, customer.last_name, payment.amount, address.address FROM rental, payment, customer, address WHERE rental.rental_id = payment.rental_id AND customer.customer_id = rental.customer_id AND customer.address_id = address.address_id";
-		String query = "db.store.find({'store.store_id'= 1})";
+//				String query = "db.store.find({'store.store_id'= 1})";
+//		String query = "SELECT * FROM store";
 		//		String query = "MATCH (payment: payment)--(rental: rental) WHERE payment.rental_id = rental.rental_id AND payment.amount = 44.79 RETURN payment.payment_date";
 		//		String query = "MATCH (rental: rental)--(customer: customer)--(address: address) WHERE rental.customer_id = customer.customer_id AND customer.address_id = address.address_id";
 		new Polystore().run(query);

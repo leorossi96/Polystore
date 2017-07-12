@@ -35,8 +35,14 @@ public class AggregatoreJson {
 					.drop("last_update");
 			datasetList.add(datasetTemp);
 		}
+		if(datasetList.size()==1)	{
+			datasetList.get(0)
+			.write()
+			.format("json")
+			.save("/Users/mac/Desktop/ris");
+		}
 		this.joinDataset(datasetList);
-		spark.close();
+		
 	}
 	
 	private void joinDataset(List<Dataset<Row>> datasetList) {
@@ -75,10 +81,9 @@ public class AggregatoreJson {
 		}
 		if(datasetList.isEmpty()) {
 			dataset
-			.coalesce(1) //TODO rimuovere
 			.write()
 			.format("json")
-			.save("ris");
+			.save("/Users/mac/Desktop/ris");
 			return;
 		}
 	}
