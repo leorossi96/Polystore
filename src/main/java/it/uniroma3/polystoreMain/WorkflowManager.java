@@ -46,7 +46,6 @@ public class WorkflowManager {
 		List<String> nextNextNodoPath;
 		List<List<String>> listaNodiProiezione = new LinkedList<>();
 		while(i.hasNext()){
-			boolean nodoSuCuiFareProiezioni = false;
 			List<String> nodo = i.next();
 
 			for(String tabellaNodo : nodo){
@@ -54,7 +53,7 @@ public class WorkflowManager {
 					listaNodiProiezione.add(nodo);
 				}
 			}
-		
+
 		}
 		System.out.println(listaNodiProiezione.toString());
 		Map<List<String>, List<List<String>>> mappaPathNodo = new HashMap<>();
@@ -110,11 +109,11 @@ public class WorkflowManager {
 				nextNextNodoPath = null;
 				List<String> nodoPath = path.get(path.size()-2);
 				List<String> nextNodoPath = path.get(path.size()-1);
-				
+
 				System.out.println("nodo path: "+nodoPath +"\n");
 				System.out.println("next nodo path: "+nextNodoPath+"\n");
 				System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
-				
+
 				JsonArray risultati = mappaRisultati.get(nodoPath);
 				for(JsonElement je : risultati){
 					JsonObject jo = je.getAsJsonObject();
@@ -131,11 +130,8 @@ public class WorkflowManager {
 			}
 
 		}
-	
-}
 
-
-
+	}
 
 	private void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect) throws Exception {

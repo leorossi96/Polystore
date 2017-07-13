@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DataSourceMongo {
 
 	private static final String DRIVER_NAME = "mongodb.jdbc.MongoDriver";
-	private static final String DB_NAME = "admin"; //testTirocinio
+	private static final String DB_NAME = "admin";
 	private static final String URI="jdbc:mongo://localhost/"+DB_NAME+"?rebuildschema=true";
 	private static final String USER_ID = "admin"; 
 	private static final String PASSWORD = "password"; 

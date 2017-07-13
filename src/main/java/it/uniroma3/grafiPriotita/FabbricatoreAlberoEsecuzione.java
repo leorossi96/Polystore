@@ -12,7 +12,7 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import com.google.gson.JsonObject;
 
 public class FabbricatoreAlberoEsecuzione {
-	
+
 	public SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> getGrafoPriorita(List<String> tabelle, Map<String, List<List<String>>> mappaWhere) {
 		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		for(int i=0; i<tabelle.size(); i++){
@@ -28,7 +28,7 @@ public class FabbricatoreAlberoEsecuzione {
 		}
 		return grafoPriorita;
 	}
-	
+
 	public SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> getGrafoPrioritaCompatto(SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili, Map<String, List<String>> mappaDB){
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 		List<DefaultWeightedEdge> archiUtili = new LinkedList<>();
@@ -107,7 +107,7 @@ public class FabbricatoreAlberoEsecuzione {
 		}
 		return copia;
 	}
-	
+
 	private static List<String> getFigli(String tabella, Map<String, List<List<String>>> mappaWhere, List<String> tabelle){
 		List<String> figli = new LinkedList<>();
 		List<List<String>> condizioniTabella = mappaWhere.get(tabella);
@@ -118,7 +118,7 @@ public class FabbricatoreAlberoEsecuzione {
 		}
 		return figli;
 	}
-	
+
 	public List<String> getRadice(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto) {
 		Iterator<List<String>> i = grafoPrioritaCompatto.vertexSet().iterator();
 		List<String> radice = null;

@@ -10,7 +10,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
 public class ResultCleaner {
-	
+
 	public static JsonArray fromMongo(JsonArray ris) {
 		/*
 		 * I risultati di una query mongo sono nella stessa forma dei risultati di una
@@ -18,7 +18,7 @@ public class ResultCleaner {
 		 */
 		return fromSQL(ris);
 	}
-	
+
 	public static JsonArray fromNeo4j(JsonArray ris, boolean joinRisultati, boolean isFiglio) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<JsonElement> iterator = ris.iterator();
@@ -40,7 +40,7 @@ public class ResultCleaner {
 		String r2 = "["+r+"]";
 		return createJsonArray(r2);
 	}
-	
+
 	public static JsonArray fromSQL(JsonArray ris) {
 		StringBuilder sb = new StringBuilder();
 		Iterator<JsonElement> iterator = ris.iterator();
@@ -57,7 +57,7 @@ public class ResultCleaner {
 		String r2 = "["+r+"]";
 		return createJsonArray(r2);
 	}
-	
+
 	private static JsonArray createJsonArray(String s) {
 		JsonReader j = new JsonReader(new StringReader(s));
 		j.setLenient(true);

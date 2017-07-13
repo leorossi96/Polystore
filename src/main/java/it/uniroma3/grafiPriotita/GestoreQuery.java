@@ -64,19 +64,19 @@ public class GestoreQuery {
 					}
 				}
 				else{
-				for(int j=0; j<path.size()-2; j++){
-					List<String> nodoPath = path.get(j);
-					List<String> nextNodoPath = path.get(j+1);
-					nextNextNodoPath = path.get(j+2);
-					JsonArray risultati = mappaRisultati.get(nodoPath);
-					for(JsonElement je : risultati){
-						JsonObject jo = je.getAsJsonObject();
-						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
-						System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
+					for(int j=0; j<path.size()-2; j++){
+						List<String> nodoPath = path.get(j);
+						List<String> nextNodoPath = path.get(j+1);
+						nextNextNodoPath = path.get(j+2);
+						JsonArray risultati = mappaRisultati.get(nodoPath);
+						for(JsonElement je : risultati){
+							JsonObject jo = je.getAsJsonObject();
+							fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+							System.out.println("fkUtili per "+nextNodoPath.toString()+" = "+fkUtili.toString());
+						}
+						eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+						fkUtili.clear();
 					}
-					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
-					fkUtili.clear();
-				}
 				}
 				nextNextNodoPath = null;
 				List<String> nodoPath = path.get(path.size()-2);

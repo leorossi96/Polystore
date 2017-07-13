@@ -35,13 +35,6 @@ public class AggregatoreJson {
 					.drop("last_update");
 			datasetList.add(datasetTemp);
 		}
-		if(datasetList.size()==1)	{
-			datasetList.get(0)
-//			.distinct()
-			.write()
-			.format("json")
-			.save("/Users/mac/Desktop/ris");
-		}
 		this.joinDataset(datasetList);
 		
 	}
@@ -82,7 +75,6 @@ public class AggregatoreJson {
 		}
 		if(datasetList.isEmpty()) {
 			dataset
-//			.distinct()
 			.write()
 			.format("json")
 			.save("/Users/mac/Desktop/ris");

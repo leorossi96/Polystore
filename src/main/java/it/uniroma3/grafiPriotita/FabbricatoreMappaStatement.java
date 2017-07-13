@@ -20,7 +20,7 @@ public class FabbricatoreMappaStatement {
 		Map<String, List<List<String>>> mappaWhere = new HashMap<>();
 
 		Set<String> tabelle = jsonCheMiServono.keySet();
-		
+
 		for(String tabella:tabelle){
 			mappaWhere.put(tabella, new LinkedList<List<String>>());
 		}
@@ -55,7 +55,7 @@ public class FabbricatoreMappaStatement {
 				mappaSelect.put(i.next(), noProiezioni);
 			}
 		}
-		
+
 		for(String proiezione : listaProiezioni){
 			String tabellaProiezione = proiezione.split("\\.")[0];
 			if(mappaSelect.containsKey(tabellaProiezione))
@@ -68,7 +68,7 @@ public class FabbricatoreMappaStatement {
 		}
 		return mappaSelect;
 	}
-	
+
 	public Map<String, List<String>> getMappaDB(Map<String, JsonObject> jsonUtili){
 		Map<String, List<String>> mappaDB = new HashMap<>();
 		for(String k : jsonUtili.keySet()){
