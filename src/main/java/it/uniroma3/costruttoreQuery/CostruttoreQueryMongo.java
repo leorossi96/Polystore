@@ -101,8 +101,11 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		queryProiezione.append("SELECT ");
 		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
 		for(String tabella: nextNodoPath){
-			if(mappaSelect.get(tabella) != null)
+			if(mappaSelect.containsKey(tabella))	{
+				System.out.println("TABELLA: "+tabella);
+				System.out.println("GETTABELLA: "+mappaSelect.get(tabella));
 				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
+			}
 		}
 
 		if(nextNextNodoPath != null){//vuol dire che è un nodo del path di passaggio
@@ -113,6 +116,10 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 						tabellaDiJoin = tabella;
 				}
 			}
+			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			}
+			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+", ");
 			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0)+"_id\nFROM\n");
 		}
 		else{
@@ -126,6 +133,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
 				}
 				queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+"\nFROM\n");
+				System.out.println("QUERYPROIEZIONE: "+queryProiezione);
 			}
 		}
 
@@ -144,6 +152,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		if(fkUtili!=null)	{
+			
 			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
 		}
 		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
@@ -153,6 +162,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 					JsonObject jo = je.getAsJsonObject();
 					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
 				}
+
 				queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
 			}
 		}

@@ -99,7 +99,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 			}
 		}
 		String queryNeo4j = queryRiscritta.toString();
-//		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
+		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
@@ -163,6 +163,10 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 						tabellaDiJoin = tabella;
 				}
 			}
+			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			}
+			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+", ");
 			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0));
 		}
 		else{
@@ -184,7 +188,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		}
 
 		String queryNeo4j = queryProiezione.toString();
-		System.out.println("QUERY NEO4J PROIEZIONE=\n");
+		System.out.println("QUERY NEO4J PROIEZIONE="+queryNeo4j+"\n");
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, null, campiDaSelezionareDelNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

@@ -89,6 +89,9 @@ public class WorkflowManager {
 					List<String> nodoPath = path.get(j);
 					List<String> nextNodoPath = path.get(j+1);
 					nextNextNodoPath = path.get(j+2);
+					System.out.println("nodo path: "+nodoPath +"\n");
+					System.out.println("next nodo path: "+nextNodoPath+"\n");
+					System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
 					JsonArray risultati = mappaRisultati.get(nodoPath);
 					for(JsonElement je : risultati){
 						JsonObject jo = je.getAsJsonObject();
@@ -107,6 +110,11 @@ public class WorkflowManager {
 				nextNextNodoPath = null;
 				List<String> nodoPath = path.get(path.size()-2);
 				List<String> nextNodoPath = path.get(path.size()-1);
+				
+				System.out.println("nodo path: "+nodoPath +"\n");
+				System.out.println("next nodo path: "+nextNodoPath+"\n");
+				System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
+				
 				JsonArray risultati = mappaRisultati.get(nodoPath);
 				for(JsonElement je : risultati){
 					JsonObject jo = je.getAsJsonObject();

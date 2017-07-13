@@ -133,6 +133,10 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 						tabellaDiJoin = tabella;
 				}
 			}
+			for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
+				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
+			}
+			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+", ");
 			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0)+"_id\nFROM\n");
 		}
 		else{
@@ -177,7 +181,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE SQL =\n");
+		System.out.println("\nQUERY PROIEZIONE SQL ="+query+"\n");
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

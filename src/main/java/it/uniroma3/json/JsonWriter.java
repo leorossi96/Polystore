@@ -19,8 +19,11 @@ public class JsonWriter {
 	public void writeArray(JsonArray jsonArray, String pathName) throws IOException {
 		File file = new File(pathName);
 		try {
-			if(!file.exists())
+			if(!file.exists())	{
 				file.createNewFile();
+				file.deleteOnExit();
+			}
+				
 			FileWriter writer = new FileWriter(file);
 			writer.write(jsonArray.toString());
 			writer.close();
