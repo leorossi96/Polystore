@@ -62,7 +62,7 @@ public class Polystore {
 					nodiRisultato.add(nodo);
 					JsonArray array = mappaRisultati.get(nodo);
 					if (array.size()!=0){
-						System.out.println("PROVIENE DA: "+nodo.toString());
+//						System.out.println("PROVIENE DA: "+nodo.toString());
 						String path = writer.writeArrayTemporary(array);
 						paths.add(path);
 					}
@@ -72,7 +72,7 @@ public class Polystore {
 		if(paths.size() == 1) {
 			/*Nel caso di un solo risultato non c'è bisogno di invocare AggregatoreJson*/
 			Path source = Paths.get(paths.get(0));
-			File target = new File("path destinazione"); //TODO rendere parametrico insieme a quello di spark
+			File target = new File("/Users/leorossi/Desktop/risultati.json"); //TODO rendere parametrico insieme a quello di spark
 			if(!target.exists())
 				target.createNewFile();
 			OutputStream fos = new FileOutputStream(target);
@@ -116,12 +116,23 @@ public class Polystore {
 
 		WorkflowManager workflowManager = new WorkflowManager();
 		workflowManager.esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
+		System.out.println("FINITO");
 		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere);
+		final long startTime = System.currentTimeMillis();
 		this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect);
+		final long elapsedTime = System.currentTimeMillis() - startTime;
+		System.out.println("TEMPO AGGREGAZIONE = "+ elapsedTime/ 1000.0);
 	}
 
 	public static void main (String[]args) throws Exception{
-		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
+		String query = "SELECT * FROM staff";
+//		String query = "SELECT * FROM country";
+//		String query = "SELECT * FROM film";
+//		String query = "SELECT * FROM staff, address WHERE staff.address_id = address.address_id";
+//		String query = "SELECT * FROM rental, inventory WHERE rental.inventory_id = inventory.inventory_id";
+//		String query = "SELECT * FROM rental, inventory, customer WHERE rental.inventory_id = inventory.inventory_id AND rental.customer_id = customer.customer_id";
+		
+//		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
 		//				String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
 		//		String query = "SELECT * FROM language WHERE language.name = 'Tswana'";
 		//		String query = "SELECT city.city_id FROM city WHERE city.city = 'Lens'";
@@ -132,7 +143,6 @@ public class Polystore {
 		//		String query = "SELECT customer.first_name, customer.last_name, address.address, address.address2 FROM customer, address WHERE customer.address_id = address.address_id";
 		//		String query = "SELECT customer.first_name, customer.last_name, payment.amount, address.address FROM rental, payment, customer, address WHERE rental.rental_id = payment.rental_id AND customer.customer_id = rental.customer_id AND customer.address_id = address.address_id";
 		//				String query = "db.store.find({'store.store_id'= 1})";
-		//		String query = "SELECT * FROM store";
 		//		String query = "MATCH (payment: payment)--(rental: rental) WHERE payment.rental_id = rental.rental_id AND payment.amount = 44.79 RETURN payment.payment_date";
 		//		String query = "MATCH (rental: rental)--(customer: customer)--(address: address) WHERE rental.customer_id = customer.customer_id AND customer.address_id = address.address_id";
 		new Polystore().run(query);

@@ -27,7 +27,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		final long startTime = System.currentTimeMillis();
 
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); 
-		System.out.println("MAPPA ARRAY FK FIGLI = "+ mappaArrayFkFigli.toString());
+//		System.out.println("MAPPA ARRAY FK FIGLI = "+ mappaArrayFkFigli.toString());
 		StringBuilder queryRiscritta = new StringBuilder();
 		boolean isFiglio = true;
 		boolean joinRisultati = false;
@@ -99,9 +99,13 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 			}
 		}
 		String queryNeo4j = queryRiscritta.toString();
-		System.out.println("QUERY NEO4J =\n"+ queryNeo4j);
+		System.out.println("QUERY NEO4J \n");
+		final long startTime2 = System.currentTimeMillis();
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, campoReturn, listaProiezioniNodo);
+		final long elapsedTime2 = System.currentTimeMillis() - startTime2;
+		System.out.println("ESEGUITA "+ elapsedTime2/1000.0);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
+		System.out.println("PULITI");
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query Neo4j " + elapsedTime/1000.0);
@@ -188,7 +192,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 		}
 
 		String queryNeo4j = queryProiezione.toString();
-		System.out.println("QUERY NEO4J PROIEZIONE="+queryNeo4j+"\n");
+		System.out.println("QUERY NEO4J PROIEZIONE \n");
 		JsonArray risultati = eseguiQueryDirettamente(queryNeo4j, null, campiDaSelezionareDelNodo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromNeo4j(risultati, joinRisultati, isFiglio);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

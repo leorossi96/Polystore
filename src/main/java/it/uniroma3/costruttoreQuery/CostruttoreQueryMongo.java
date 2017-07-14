@@ -29,7 +29,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 
 		Map<String , List<String>> mappaArrayFkFigli = this.getMappaArrayFkFigli(grafoPrioritaCompatto, mappaRisultati, nodo); 
 		String campoSelect = this.getForeignKeyNodo(grafoPriorita,nodo.get(0),mappaWhere);
-		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
+//		System.out.println("CAMPO SELECT = "+campoSelect +"\n");
 		List<String> listaProiezioniNodo = new LinkedList<>();
 		StringBuilder queryRiscritta = new StringBuilder();
 		if(campoSelect == null){ //è la radice
@@ -80,7 +80,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		}
 
 		String queryMongo = queryRiscritta.toString();
-//		System.out.println("QUERY MONGO : \n"+queryMongo);
+		System.out.println("QUERY MONGO \n");
 		JsonArray risultati = eseguiQueryDirettamente(queryMongo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
@@ -102,8 +102,8 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
 		for(String tabella: nextNodoPath){
 			if(mappaSelect.containsKey(tabella))	{
-				System.out.println("TABELLA: "+tabella);
-				System.out.println("GETTABELLA: "+mappaSelect.get(tabella));
+//				System.out.println("TABELLA: "+tabella);
+//				System.out.println("GETTABELLA: "+mappaSelect.get(tabella));
 				campiDaSelezionareDelNodo.addAll(mappaSelect.get(tabella));
 			}
 		}
@@ -133,7 +133,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
 				}
 				queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+"\nFROM\n");
-				System.out.println("QUERYPROIEZIONE: "+queryProiezione);
+				System.out.println("QUERYPROIEZIONE");
 			}
 		}
 
@@ -167,7 +167,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE MONGO =\n");
+		System.out.println("\nQUERY PROIEZIONE MONGO \n");
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

@@ -101,7 +101,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 			}
 		}
 		String querySQL = queryRiscritta.toString();
-		System.out.println("QUERY FINALE SQL : \n"+querySQL);
+		System.out.println("QUERY FINALE SQL  \n");
 		JsonArray risultati = eseguiQueryDirettamente(querySQL);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
@@ -181,7 +181,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE SQL ="+query+"\n");
+		System.out.println("\nQUERY PROIEZIONE SQL \n");
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

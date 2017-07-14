@@ -12,7 +12,7 @@ import org.apache.spark.sql.SparkSession;
 public class AggregatoreJson {
 
 	private SparkSession spark;
-	
+
 	public AggregatoreJson() {
 		SparkConf conf = new SparkConf()
 				.setAppName(this.getClass().getSimpleName())
@@ -22,11 +22,11 @@ public class AggregatoreJson {
 				.config(conf)
 				.getOrCreate();
 	}
-	
+
 	public void join(List<String> paths) {
 		List<Dataset<Row>> datasetList = new LinkedList<>();
 		Dataset<Row> datasetTemp = null;
-		
+
 		for(String path : paths) {
 			datasetTemp = spark
 					.read()
@@ -36,9 +36,9 @@ public class AggregatoreJson {
 			datasetList.add(datasetTemp);
 		}
 		this.joinDataset(datasetList);
-		
+
 	}
-	
+
 	private void joinDataset(List<Dataset<Row>> datasetList) {
 		for(int i=0;i<datasetList.size();i++) {
 			for(int j=i+1;j<datasetList.size();j++){
@@ -73,14 +73,22 @@ public class AggregatoreJson {
 				return;
 			}
 		}
-		if(datasetList.isEmpty()) {
-			dataset
-			.write()
-			.format("json")
-			.save("/Users/mac/Desktop/ris");
-			return;
+		try {
+			if(datasetList.isEmpty()) {
+				dataset
+				.write()
+				.format("json")
+				.save("/Users/leorossi/Desktop/ris");
+			}
 		}
+		catch (Exception e) {
+			dataset
+			.toJavaRDD()
+			.saveAsTextFile("/Users/leorossi/Desktop/ris");
+		}
+		return;
 	}
+
 
 	private List<String> getColumns(Dataset<Row> dataset) {
 		String[] array = Arrays.copyOfRange(dataset.columns(), 0, dataset.columns().length);

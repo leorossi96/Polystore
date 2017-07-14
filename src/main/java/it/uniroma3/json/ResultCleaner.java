@@ -33,12 +33,14 @@ public class ResultCleaner {
 			.replaceAll(Pattern.quote("}{"), "},{")
 			.replaceAll(Pattern.quote("}}"),"}");
 		else{
-			r = risultati.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
-					.replaceAll(Pattern.quote("}}"),"}")
-					.replaceAll(Pattern.quote("}{"), "},{");
+//			System.out.println(risultati);
+			r = "[" +risultati
+//					.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
+//					.replaceAll(Pattern.quote("}}"),"}")
+					.replaceAll(Pattern.quote("}{"), "},{")+"]";
 		}
-		String r2 = "["+r+"]";
-		return createJsonArray(r2);
+//		String r2 = "["+r+"]";
+		return createJsonArray(r);
 	}
 
 	public static JsonArray fromSQL(JsonArray ris) {

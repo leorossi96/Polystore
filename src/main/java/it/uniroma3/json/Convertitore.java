@@ -24,6 +24,8 @@ public class Convertitore {
 				}
 				else{
 					if(listaProiezioniNodo.isEmpty()){ //ritorno tutti i campi
+//						System.out.println(resultSet.getObject(i+1).toString());
+//						System.out.println(resultSet.getObject(i + 1).toString().replaceFirst("\\{([^=].*?=)\\{", "{").replaceAll("\\}, ([^=].*?=)\\{", ", ").replaceAll(Pattern.quote("}}"), "\"}").replaceAll(Pattern.quote("="), "\":\"").replaceAll(",", "\",").replaceAll("\\{", "{\""));
 						obj = (JsonObject) parser.parse(resultSet.getObject(i + 1).toString().replaceFirst("\\{([^=].*?=)\\{", "{").replaceAll("\\}, ([^=].*?=)\\{", ", ").replaceAll(Pattern.quote("}}"), "\"}").replaceAll(Pattern.quote("="), "\":\"").replaceAll(",", "\",").replaceAll("\\{", "{\"")
 								.replaceAll(Pattern.quote(", "), ", \""));
 					}
