@@ -8,7 +8,7 @@ public class DataSourceNeo4j {
 
 	private static final String URI = "jdbc:neo4j:http://localhost";
 	private static final String USER_ID = "neo4j";
-	private static final String PASSWORD = "password";
+	private static final String PASSWORD = "root";
 	private static Connection ISTANCE;
 
 	public static Connection getConnection() {

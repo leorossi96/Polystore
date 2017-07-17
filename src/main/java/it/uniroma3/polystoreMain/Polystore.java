@@ -62,7 +62,7 @@ public class Polystore {
 					nodiRisultato.add(nodo);
 					JsonArray array = mappaRisultati.get(nodo);
 					if (array.size()!=0){
-//						System.out.println("PROVIENE DA: "+nodo.toString());
+						//						System.out.println("PROVIENE DA: "+nodo.toString());
 						String path = writer.writeArrayTemporary(array);
 						paths.add(path);
 					}
@@ -117,7 +117,7 @@ public class Polystore {
 		WorkflowManager workflowManager = new WorkflowManager();
 		workflowManager.esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
 		System.out.println("FINITO");
-		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere);
+		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere, jsonUtili);
 		final long startTime = System.currentTimeMillis();
 		this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
@@ -125,14 +125,16 @@ public class Polystore {
 	}
 
 	public static void main (String[]args) throws Exception{
-		String query = "SELECT * FROM staff";
-//		String query = "SELECT * FROM country";
-//		String query = "SELECT * FROM film";
-//		String query = "SELECT * FROM staff, address WHERE staff.address_id = address.address_id";
-//		String query = "SELECT * FROM rental, inventory WHERE rental.inventory_id = inventory.inventory_id";
-//		String query = "SELECT * FROM rental, inventory, customer WHERE rental.inventory_id = inventory.inventory_id AND rental.customer_id = customer.customer_id";
-		
-//		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
+//			String query = "SELECT * FROM moviecredits, credits, movies WHERE moviecredits.credits_id = credits.credits_id AND movies.movies_id = moviecredits.movies_id AND movies.title = 'Toy Story'"; //OK OCCHIO RISULTATI
+		String query = "SELECT * FROM Review, moviecredits WHERE moviecredits.movies_id = Review.id_movie AND moviecredits.movies_id = '862'";
+//			String query = "MATCH (movies : movies) WHERE movies.movies_id = '141423' RETURN movies.title";
+		//		String query = "SELECT * FROM country";
+		//		String query = "SELECT * FROM film";
+//		String query = "SELECT * FROM staff, address WHERE address.address_id = staff.address_id";
+		//	String query = "SELECT * FROM rental, inventory WHERE rental.inventory_id = inventory.inventory_id";
+		//		String query = "SELECT * FROM rental, inventory, customer WHERE rental.inventory_id = inventory.inventory_id AND rental.customer_id = customer.customer_id";
+
+		//		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
 		//				String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
 		//		String query = "SELECT * FROM language WHERE language.name = 'Tswana'";
 		//		String query = "SELECT city.city_id FROM city WHERE city.city = 'Lens'";

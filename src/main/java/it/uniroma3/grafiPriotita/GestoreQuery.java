@@ -33,7 +33,7 @@ public class GestoreQuery {
 				grafoCopia.removeVertex(foglia);
 			}
 		}
-		System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
+		//System.out.println("MAPPA RISULTATI = "+ mappaRisultati.toString());
 		esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
 	}
 

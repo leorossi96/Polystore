@@ -39,7 +39,7 @@ public class WorkflowManager {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void eseguiProiezioni(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere) throws Exception{
+	public void eseguiProiezioni(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, JsonObject> jsonUtili) throws Exception{
 		FabbricatoreAlberoEsecuzione fae = new FabbricatoreAlberoEsecuzione();
 		List<String> radice = fae.getRadice(grafoPrioritaCompatto);
 		Iterator<List<String>> i = grafoPrioritaCompatto.vertexSet().iterator();
@@ -68,18 +68,21 @@ public class WorkflowManager {
 
 			if(path.size() == 2){
 				List<String> nodoPath = path.get(0);
+				System.out.println(nodoPath);
 				List<String> nextNodoPath = path.get(1);
+				System.out.println(nextNodoPath);
 				JsonArray risultati = mappaRisultati.get(nodoPath);
 				for(JsonElement je : risultati){
 					JsonObject jo = je.getAsJsonObject();
-					fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+					String pk = jsonUtili.get(nextNodoPath.get(0)).get("primarykey").getAsString().split("\\.")[1];
+					fkUtili.add(jo.get(pk).getAsString());
 				}
 				if(fkUtili.isEmpty()){
 					System.out.println("Non ci sono risultati");
 					System.exit(0);
 				}	
 				if(!nodiProiettati.contains(nextNodoPath))	{
-					eseguiQueryProiezione(fkUtili, nextNodoPath, null, mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+					eseguiQueryProiezione(fkUtili, nextNodoPath, null, mappaRisultati, mappaDB, mappaWhere, mappaSelect, jsonUtili);
 					nodiProiettati.add(nextNodoPath);
 				}
 			}
@@ -88,20 +91,21 @@ public class WorkflowManager {
 					List<String> nodoPath = path.get(j);
 					List<String> nextNodoPath = path.get(j+1);
 					nextNextNodoPath = path.get(j+2);
-					System.out.println("nodo path: "+nodoPath +"\n");
-					System.out.println("next nodo path: "+nextNodoPath+"\n");
-					System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
+				//	System.out.println("nodo path: "+nodoPath +"\n");
+				//	System.out.println("next nodo path: "+nextNodoPath+"\n");
+				//	System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
 					JsonArray risultati = mappaRisultati.get(nodoPath);
 					for(JsonElement je : risultati){
 						JsonObject jo = je.getAsJsonObject();
-						fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+						String pk = jsonUtili.get(nextNodoPath.get(0)).get("primarykey").getAsString().split("\\.")[1];
+						fkUtili.add(jo.get(pk).getAsString());
 					}
 					if(fkUtili.isEmpty())	{
 						System.out.println("Non ci sono risultati");
 						System.exit(0);
 					}
 					if (!nodiProiettati.contains(nextNodoPath))	{
-						eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+						eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect, jsonUtili);
 						fkUtili.clear();
 						nodiProiettati.add(nextNodoPath);
 					}
@@ -110,21 +114,22 @@ public class WorkflowManager {
 				List<String> nodoPath = path.get(path.size()-2);
 				List<String> nextNodoPath = path.get(path.size()-1);
 
-				System.out.println("nodo path: "+nodoPath +"\n");
-				System.out.println("next nodo path: "+nextNodoPath+"\n");
-				System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
+			//	System.out.println("nodo path: "+nodoPath +"\n");
+				//System.out.println("next nodo path: "+nextNodoPath+"\n");
+				//System.out.println("next next nodo path: "+nextNextNodoPath +"\n");
 
 				JsonArray risultati = mappaRisultati.get(nodoPath);
 				for(JsonElement je : risultati){
 					JsonObject jo = je.getAsJsonObject();
-					fkUtili.add(jo.get(nextNodoPath.get(0)+"_id").getAsString());
+					String pk = jsonUtili.get(nextNodoPath).get("primarykey").getAsString().split("\\.")[1];
+					fkUtili.add(jo.get(pk).getAsString());
 				}
 				if(fkUtili.isEmpty())	{
 					System.out.println("Non ci sono risultati");
 					System.exit(0);
 				}
 				if(!nodiProiettati.contains(nextNodoPath))	{
-					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect);
+					eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath,mappaRisultati, mappaDB, mappaWhere, mappaSelect, jsonUtili);
 					nodiProiettati.add(nextNodoPath);
 				}
 			}
@@ -134,7 +139,7 @@ public class WorkflowManager {
 	}
 
 	private void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
-			Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect) throws Exception {
+			Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaDB, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,Map<String, JsonObject> jsonUtili) throws Exception {
 		CostruttoreQuery costruttoreQuery = null;
 		String dbNodo = null;
 		for(String db : mappaDB.keySet()){
@@ -147,7 +152,7 @@ public class WorkflowManager {
 			costruttoreQuery = new CostruttoreQueryMongo();
 		if(dbNodo.equalsIgnoreCase("neo4j"))
 			costruttoreQuery = new CostruttoreQueryNeo4j();
-		costruttoreQuery.eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath, mappaWhere, mappaSelect, mappaRisultati);
+		costruttoreQuery.eseguiQueryProiezione(fkUtili, nextNodoPath, nextNextNodoPath, mappaWhere, mappaSelect, mappaRisultati, jsonUtili);
 	}
 
 	private void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto, List<String> nodo, Map<String, JsonObject> jsonUtili,
@@ -160,7 +165,7 @@ public class WorkflowManager {
 			costruttoreQuery = new CostruttoreQueryMongo();
 		if(myJson.get("database").getAsString().equalsIgnoreCase("neo4j"))
 			costruttoreQuery = new CostruttoreQueryNeo4j();
-		costruttoreQuery.eseguiQuery(grafoPrioritaCompatto, nodo, mappaWhere, mappaSelect, mappaRisultati, grafoPriorita);
+		costruttoreQuery.eseguiQuery(grafoPrioritaCompatto, nodo, mappaWhere, mappaSelect, mappaRisultati, grafoPriorita, jsonUtili);
 	}
 
 	private List<List<String>> getFoglie(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> g){
@@ -170,4 +175,5 @@ public class WorkflowManager {
 				foglie.add(vertex);
 		return foglie;
 	}
+
 }

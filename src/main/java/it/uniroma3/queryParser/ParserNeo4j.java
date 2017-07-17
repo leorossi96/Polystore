@@ -34,7 +34,7 @@ public class ParserNeo4j implements QueryParser{
                 }
 
                 scanner.close();
-                System.out.println("Parser Neo4j lista tabelle = "+tableList.toString());
+               // System.out.println("Parser Neo4j lista tabelle = "+tableList.toString());
 
                 //creo la listaWhere
                 this.matriceWhere = new LinkedList<>();
@@ -54,7 +54,7 @@ public class ParserNeo4j implements QueryParser{
                                 }
                                 rigaMatrice.add(oggettiStatementSeparati[1]);
                                 this.matriceWhere.add(rigaMatrice);        
-                                System.out.println("\n\nNEO4J MATRICE WHERE =\n"+matriceWhere.toString()+"\n\n");
+                             //   System.out.println("\n\nNEO4J MATRICE WHERE =\n"+matriceWhere.toString()+"\n\n");
                         }         
 
                         //creo la listaSelect

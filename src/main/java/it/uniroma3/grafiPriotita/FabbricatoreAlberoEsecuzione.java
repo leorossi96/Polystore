@@ -38,7 +38,7 @@ public class FabbricatoreAlberoEsecuzione {
 			while(i.hasNext()){
 				String nodoCorrente = i.next();
 				Iterator<DefaultWeightedEdge> iArchi = grafoPriorita.incomingEdgesOf(nodoCorrente).iterator();
-				System.out.println("nodo corrente :"+nodoCorrente);
+				//System.out.println("nodo corrente :"+nodoCorrente);
 				if(iArchi.hasNext()){
 					DefaultWeightedEdge arcoEntrante = iArchi.next();
 					String padre = grafoPriorita.getEdgeSource(arcoEntrante);
@@ -46,7 +46,7 @@ public class FabbricatoreAlberoEsecuzione {
 						List<String> nodoNuovoGrafo = new LinkedList<>();
 						nodoNuovoGrafo.add(nodoCorrente);
 						archiUtili.add(arcoEntrante);
-						System.out.println("archi utili :"+archiUtili);
+						//System.out.println("archi utili :"+archiUtili);
 						addDiscendentiStessoDB(nodoNuovoGrafo, nodoCorrente, db, grafoPriorita, jsonUtili);
 						grafoPrioritaCompatto.addVertex(nodoNuovoGrafo);
 					}
@@ -58,17 +58,17 @@ public class FabbricatoreAlberoEsecuzione {
 					grafoPrioritaCompatto.addVertex(nodoNuovoGrafo);
 				}
 			}
-			System.out.println("GRAFO PARZIALE:"+grafoPrioritaCompatto.toString());
+			//System.out.println("GRAFO PARZIALE:"+grafoPrioritaCompatto.toString());
 		}
 		//aggiungo gli archi
 		for(DefaultWeightedEdge e : archiUtili){
-			System.out.println("Arco Da Aggiungere:"+ e);
+			//System.out.println("Arco Da Aggiungere:"+ e);
 			for(List<String> nodoPadre : grafoPrioritaCompatto.vertexSet()){
 				if(nodoPadre.contains(grafoPriorita.getEdgeSource(e))){
-					System.out.println("nodoPadre = "+nodoPadre+"\n Contains = "+grafoPriorita.getEdgeSource(e));
+				//	System.out.println("nodoPadre = "+nodoPadre+"\n Contains = "+grafoPriorita.getEdgeSource(e));
 					for(List<String> nodoFiglio : grafoPrioritaCompatto.vertexSet()){
 						if(nodoFiglio.contains(grafoPriorita.getEdgeTarget(e))){
-							System.out.println("nodoFiglio = "+nodoFiglio+"\n Contains = "+grafoPriorita.getEdgeTarget(e));
+							//System.out.println("nodoFiglio = "+nodoFiglio+"\n Contains = "+grafoPriorita.getEdgeTarget(e));
 							grafoPrioritaCompatto.addEdge(nodoPadre, nodoFiglio);
 
 						}

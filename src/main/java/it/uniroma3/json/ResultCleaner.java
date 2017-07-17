@@ -44,20 +44,22 @@ public class ResultCleaner {
 	}
 
 	public static JsonArray fromSQL(JsonArray ris) {
-		StringBuilder sb = new StringBuilder();
-		Iterator<JsonElement> iterator = ris.iterator();
-		while (iterator.hasNext()) {
-			sb.append(iterator.next().toString());
-		}
-		String risultati = sb.toString();
-		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"")
-				.replaceAll(Pattern.quote("{\"value\":\"{"), "{")
-				.replaceAll(Pattern.quote("}\""), "")
-				.replaceAll(":([^\"].*?),", ":\"$1\",")
-				.replaceAll(Pattern.quote("}{"), "},{")
-				.replaceAll("([0-9]).0", "$1");
-		String r2 = "["+r+"]";
-		return createJsonArray(r2);
+		System.out.println("JBIJBQ:  "+ ris.toString());
+//		StringBuilder sb = new StringBuilder();
+//		Iterator<JsonElement> iterator = ris.iterator();
+//		while (iterator.hasNext()) {
+//			sb.append(iterator.next().toString());
+//		}
+//		String risultati = sb.toString();
+//		String r = risultati.replaceAll(Pattern.quote("\\\""), "\"")
+//				.replaceAll(Pattern.quote("{\"value\":\"{"), "{")
+//				.replaceAll(Pattern.quote("}\""), "")
+//				.replaceAll(" :([^\"].*?),", " :\"$1\",")
+//				.replaceAll(Pattern.quote("}{"), "},{")
+//				.replaceAll("([0-9]).0", "$1");
+//		String r2 = "["+r+"]";
+//		return new JsonParser().parse(r2).getAsJsonArray();
+		return ris;
 	}
 
 	private static JsonArray createJsonArray(String s) {

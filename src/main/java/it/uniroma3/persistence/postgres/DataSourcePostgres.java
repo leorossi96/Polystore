@@ -5,7 +5,7 @@ import java.sql.*;
 public class DataSourcePostgres {
 
 	private static final String DRIVER = "org.postgresql.Driver";
-	private static final String DATABASE = "Polystore";
+	private static final String DATABASE = "postgres"; //Polystore
 	private static final String URI = "jdbc:postgresql://localhost/"+DATABASE;
 	private static final String USER_ID = "postgres";
 	private static final String PASSWORD = "postgres";

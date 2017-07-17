@@ -21,7 +21,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 
 	@Override
 	public void eseguiQuery(SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto,
-			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita)
+			List<String> nodo, Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect, Map<List<String>, JsonArray> mappaRisultati, SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita, Map<String, JsonObject> jsonUtili)
 					throws Exception {
 
 		final long startTime = System.currentTimeMillis();
@@ -41,8 +41,10 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 					listaProiezioniNodo.addAll(mappaSelect.get(tabella));
 			}
 		}
-		else
-			listaProiezioniNodo.add(nodo.get(0)+"."+nodo.get(0)+"_id");
+		else{
+			String pk = jsonUtili.get(nodo.get(0)).get("primarykey").getAsString().split("\\.")[1];
+			listaProiezioniNodo.add(nodo.get(0)+"."+pk);
+		}
 
 		String tabellaPartenza = nodo.get(0);
 		queryRiscritta.append("MATCH ("+tabellaPartenza+" : "+tabellaPartenza+")\n");
@@ -90,8 +92,9 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 						Iterator<DefaultWeightedEdge> i = grafoPriorita.outgoingEdgesOf(tabella).iterator();
 						while(i.hasNext()){
 							String tabellaFiglio = grafoPriorita.getEdgeTarget(i.next());
+							String pkTabellaFiglio = jsonUtili.get(tabellaFiglio).get("primarykey").getAsString().split("\\.")[1];
 							if(!nodo.contains(tabellaFiglio))
-								listaProiezioniNodo.add(tabella+"."+tabellaFiglio+"_id"); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
+								listaProiezioniNodo.add(tabella+"."+pkTabellaFiglio); //aggiungi alle proiezioni che già c'erano il fatto di ritornare l'id di ogni figlio per garantire il join
 						}
 					}
 				}
@@ -116,10 +119,11 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 	@Override
 	public void eseguiQueryProiezione(List<String> fkUtili, List<String> nextNodoPath, List<String> nextNextNodoPath,
 			Map<String, List<List<String>>> mappaWhere, Map<String, List<String>> mappaSelect,
-			Map<List<String>, JsonArray> mappaRisultati) throws Exception {
+			Map<List<String>, JsonArray> mappaRisultati, Map<String, JsonObject> jsonUtili) throws Exception {
 
 		final long startTime = System.currentTimeMillis();
-
+		
+		String pkNextNodoPath = jsonUtili.get(nextNodoPath.get(0)).get("primarykey").getAsString().split("\\.")[1];
 		boolean isFiglio = false;
 		boolean joinRisultati = false;
 		StringBuilder queryProiezione = new StringBuilder();
@@ -141,15 +145,16 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 			}			
 		}
 		if(fkUtili!=null)
-			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"+" IN "+fkUtili.toString()+"\n");	
+			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+pkNextNodoPath+" IN "+fkUtili.toString()+"\n");	
 		else{//mi trovo nella radice nella seconda fase dell'esecuzione
 			for(String tabella: nextNodoPath){
+				String pkTabella = jsonUtili.get(tabella).get("primarykey").getAsString().split("\\.")[1];
 				List<String> fkUtiliCampoRadice = new LinkedList<>();
 				for(JsonElement je : mappaRisultati.get(nextNodoPath)){
 					JsonObject jo = je.getAsJsonObject();
-					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
+					fkUtiliCampoRadice.add(jo.get(pkTabella).getAsString());
 				}
-				queryProiezione.append("AND "+tabella+"."+tabella+"_id IN "+fkUtiliCampoRadice.toString()+"\n");
+				queryProiezione.append("AND "+tabella+"."+pkTabella+" IN "+fkUtiliCampoRadice.toString()+"\n");
 			}
 		}
 		List<String> campiDaSelezionareDelNodo = new LinkedList<>();
@@ -171,7 +176,7 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 				queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
 			}
 			queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+", ");
-			queryProiezione.append(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id, "+tabellaDiJoin+"."+nextNextNodoPath.get(0));
+			queryProiezione.append(nextNodoPath.get(0)+"."+pkNextNodoPath+", "+tabellaDiJoin+"."+pkNextNodoPath);
 		}
 		else{
 			if(campiDaSelezionareDelNodo.get(0).equals("*")){
@@ -182,8 +187,8 @@ public class CostruttoreQueryNeo4j extends CostruttoreQuery {
 				queryProiezione.append(nextNodoPath.get(nextNodoPath.size()-1)+" : "+nextNodoPath.get(nextNodoPath.size()-1)+"}\n");
 				campiDaSelezionareDelNodo.clear();
 			}else{
-				if(!campiDaSelezionareDelNodo.contains(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id")) 
-					campiDaSelezionareDelNodo.add(nextNodoPath.get(0)+"."+nextNodoPath.get(0)+"_id"); // per permettermi di comporre il risultato finale in seguito
+				if(!campiDaSelezionareDelNodo.contains(nextNodoPath.get(0)+"."+pkNextNodoPath)) 
+					campiDaSelezionareDelNodo.add(nextNodoPath.get(0)+"."+pkNextNodoPath); // per permettermi di comporre il risultato finale in seguito
 				for(int i=0; i<campiDaSelezionareDelNodo.size()-1; i++){
 					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
 				}
