@@ -23,7 +23,7 @@ public class AggregatoreJson {
 				.getOrCreate();
 	}
 
-	public void join(List<String> paths) {
+	public void join(List<String> paths, List<String> requiredColumns) {
 		List<Dataset<Row>> datasetList = new LinkedList<>();
 		Dataset<Row> datasetTemp = null;
 
@@ -35,11 +35,11 @@ public class AggregatoreJson {
 					.drop("last_update");
 			datasetList.add(datasetTemp);
 		}
-		this.joinDataset(datasetList);
+		this.joinDataset(datasetList, requiredColumns);
 
 	}
 
-	private void joinDataset(List<Dataset<Row>> datasetList) {
+	private void joinDataset(List<Dataset<Row>> datasetList, List<String> requiredColumns) {
 		for(int i=0;i<datasetList.size();i++) {
 			for(int j=i+1;j<datasetList.size();j++){
 				List<String> columns1 = this.getColumns(datasetList.get(i));
@@ -53,14 +53,14 @@ public class AggregatoreJson {
 						if(k != i && k!= j)
 							datasetListNew.add(datasetList.get(k));
 					}
-					this.joinDataset2(temp,datasetListNew);
+					this.joinDataset2(temp,datasetListNew,requiredColumns);
 					return;
 				}
 			}
 		}
 	}
 
-	private void joinDataset2(Dataset<Row> dataset, List<Dataset<Row>> datasetList) {
+	private void joinDataset2(Dataset<Row> dataset, List<Dataset<Row>> datasetList, List<String> requiredColumns) {
 		List<String> columns1 = this.getColumns(dataset);
 		for(int i = 0;i<datasetList.size();i++) {
 			List<String> columns2 = this.getColumns(datasetList.get(i));
@@ -69,12 +69,18 @@ public class AggregatoreJson {
 				Dataset<Row> temp = datasetList.get(i)
 						.join(dataset,joinField);
 				datasetList.remove(i);
-				this.joinDataset2(temp,datasetList);
+				this.joinDataset2(temp,datasetList,requiredColumns);
 				return;
 			}
 		}
 		try {
 			if(datasetList.isEmpty()) {
+				List<String> datasetColums = this.getColumns(dataset);
+				for(String name : datasetColums) {
+					if(!requiredColumns.contains(name)) {
+						dataset.drop(name);
+					}
+				}
 				dataset
 				.write()
 				.format("json")
@@ -88,7 +94,6 @@ public class AggregatoreJson {
 		}
 		return;
 	}
-
 
 	private List<String> getColumns(Dataset<Row> dataset) {
 		String[] array = Arrays.copyOfRange(dataset.columns(), 0, dataset.columns().length);
