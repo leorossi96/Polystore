@@ -25,26 +25,28 @@ public class ResultCleaner {
 		while (iterator.hasNext()) {
 			sb.append(iterator.next().toString());
 		}
+		System.out.println("Risultati da Neo4j = \n"+ris);
 		String risultati = sb.toString();
-		String r;
-		if(joinRisultati && !isFiglio) // per risolvere il problema dei risultati nel caso in cui si abbia un join interno e quindi i risultati sono nella forma [{"payment":{"amount":10,"payment_id":1,"staff_id":1,"customer_id":1,"rental_id":1},"rental":{"inventory_id":1,"staff_id":1,"customer_id":1,"rental_id":1}},{"payment":{"amount":10,"payment_id":2,"staff_id":2,"customer_id":1,"rental_id":2},"rental":{"inventory_id":2,"staff_id":2,"customer_id":1,"rental_id":2}},{"payment":{"amount":20,"payment_id":3,"staff_id":2,"customer_id":2,"rental_id":3},"rental":{"inventory_id":7,"staff_id":2,"customer_id":2,"rental_id":3}}]
-			r = risultati.replaceAll("\\},\"([^:\\{].*?)\":\\{", ",")
-			.replaceAll("\\{\"([^:\\{].*?)\":\\{\"", "\\{\"")
-			.replaceAll(Pattern.quote("}{"), "},{")
-			.replaceAll(Pattern.quote("}}"),"}");
-		else{
-//			System.out.println(risultati);
-			r = "[" +risultati
-//					.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
-//					.replaceAll(Pattern.quote("}}"),"}")
-					.replaceAll(Pattern.quote("}{"), "},{")+"]";
-		}
+		String r = ris.toString();
+//		System.out.println("RISULTATI NEO4J = \n"+ris);
+//		if(joinRisultati && !isFiglio) // per risolvere il problema dei risultati nel caso in cui si abbia un join interno e quindi i risultati sono nella forma [{"payment":{"amount":10,"payment_id":1,"staff_id":1,"customer_id":1,"rental_id":1},"rental":{"inventory_id":1,"staff_id":1,"customer_id":1,"rental_id":1}},{"payment":{"amount":10,"payment_id":2,"staff_id":2,"customer_id":1,"rental_id":2},"rental":{"inventory_id":2,"staff_id":2,"customer_id":1,"rental_id":2}},{"payment":{"amount":20,"payment_id":3,"staff_id":2,"customer_id":2,"rental_id":3},"rental":{"inventory_id":7,"staff_id":2,"customer_id":2,"rental_id":3}}]
+//			r = risultati.replaceAll("\\},\"([^:\\{].*?)\":\\{", ",")
+//			.replaceAll("\\{\"([^:\\{].*?)\":\\{\"", "\\{\"")
+//			.replaceAll(Pattern.quote("}{"), "},{")
+//			.replaceAll(Pattern.quote("}}"),"}");
+//		else{
+////			System.out.println(risultati);
+//			r = "[" +risultati
+////					.replaceAll("\\{\"([^:\\{].*?)\":\\{","\\{")
+////					.replaceAll(Pattern.quote("}}"),"}")
+//					.replaceAll(Pattern.quote("}{"), "},{")+"]";
+//		}
 //		String r2 = "["+r+"]";
 		return createJsonArray(r);
 	}
 
 	public static JsonArray fromSQL(JsonArray ris) {
-		System.out.println("JBIJBQ:  "+ ris.toString());
+//		System.out.println(ris);
 //		StringBuilder sb = new StringBuilder();
 //		Iterator<JsonElement> iterator = ris.iterator();
 //		while (iterator.hasNext()) {

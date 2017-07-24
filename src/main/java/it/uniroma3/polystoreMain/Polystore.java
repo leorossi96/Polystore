@@ -3,6 +3,7 @@ package it.uniroma3.polystoreMain;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,11 +12,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import it.uniroma3.exeptions.MalformedQueryException;
 import it.uniroma3.grafiPriotita.CaricatoreJson;
@@ -29,6 +32,10 @@ import it.uniroma3.queryParser.ParserSql;
 import it.uniroma3.queryParser.QueryParser;
 
 public class Polystore {
+
+	private static final String properties = "percorsoRisultato.properties";
+
+	private String PATH;
 
 	/**
 	 * 
@@ -52,11 +59,20 @@ public class Polystore {
 		return parser;
 	}
 
-	private void effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaSelect) throws IOException {
+	private void effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaSelect, Map<String, JsonObject> jsonUtili) throws IOException {
+		PATH = percorsoFileRisultato();
 		List<String> paths = new LinkedList<>();
 		JsonWriter writer = new JsonWriter();
+		List<String> requiredColumns = new LinkedList<>();
 		List<List<String>> nodiRisultato = new LinkedList<>();
 		for(String tabellaProiezione : mappaSelect.keySet()){
+			if(!tabellaProiezione.equals("*") && mappaSelect.get(tabellaProiezione).get(0).equals("*")){
+				JsonArray membri = jsonUtili.get(tabellaProiezione).getAsJsonArray("members");
+				for(JsonElement membro : membri){
+					requiredColumns.add(membro.getAsString().replaceAll("\"", "").split("\\.")[0]);
+				}
+			}else if(!tabellaProiezione.equals("*"))
+				requiredColumns.addAll(mappaSelect.get(tabellaProiezione));
 			for(List<String> nodo : mappaRisultati.keySet()) {
 				if(nodo.contains(tabellaProiezione) && !nodiRisultato.contains(nodo)){
 					nodiRisultato.add(nodo);
@@ -70,17 +86,27 @@ public class Polystore {
 			}
 		}
 		if(paths.size() == 1) {
+
 			/*Nel caso di un solo risultato non c'è bisogno di invocare AggregatoreJson*/
 			Path source = Paths.get(paths.get(0));
-			File target = new File("/Users/leorossi/Desktop/risultati.json"); //TODO rendere parametrico insieme a quello di spark
+			File target = new File(PATH + "/risultati.json"); //TODO rendere parametrico insieme a quello di spark
 			if(!target.exists())
 				target.createNewFile();
 			OutputStream fos = new FileOutputStream(target);
 			Files.copy(source, fos);
 			return;
 		}
+		System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOO\n"+requiredColumns);
 		AggregatoreJson aggregatore = new AggregatoreJson();
-		aggregatore.join(paths);
+		aggregatore.join(paths, requiredColumns);
+	}
+
+	private String percorsoFileRisultato() throws IOException{
+		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+		Properties props = new Properties();
+		InputStream resource = loader.getResourceAsStream(properties);
+		props.load(resource);
+		return props.getProperty("PATH");
 	}
 
 	public void run(String query) throws Exception {
@@ -94,6 +120,7 @@ public class Polystore {
 		CaricatoreJson caricatoreJson = new CaricatoreJson();
 		Map<String, JsonObject> jsonUtili = caricatoreJson.caricaJSON(listaTabelle);
 		Map<String, List<String>> mappaSelect = fabbricatoreMappe.creaMappaSelect(listaProiezioni, jsonUtili);
+		System.out.println("MAPPA SELECT ="+mappaSelect.toString());
 		System.out.println("lista proiezioni = "+listaProiezioni.toString());
 
 		Map<String, List<List<String>>> mappaWhere = fabbricatoreMappe.creaMappaWhere(matriceWhere, jsonUtili);
@@ -119,23 +146,34 @@ public class Polystore {
 		System.out.println("FINITO");
 		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere, jsonUtili);
 		final long startTime = System.currentTimeMillis();
-		this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect);
+		this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect, jsonUtili);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("TEMPO AGGREGAZIONE = "+ elapsedTime/ 1000.0);
 	}
 
 	public static void main (String[]args) throws Exception{
-//			String query = "SELECT * FROM moviecredits, credits, movies WHERE moviecredits.credits_id = credits.credits_id AND movies.movies_id = moviecredits.movies_id AND movies.title = 'Toy Story'"; //OK OCCHIO RISULTATI
-		String query = "SELECT * FROM Review, moviecredits WHERE moviecredits.movies_id = Review.id_movie AND moviecredits.movies_id = '862'";
-//			String query = "MATCH (movies : movies) WHERE movies.movies_id = '141423' RETURN movies.title";
-		//		String query = "SELECT * FROM country";
+		//String query = args[0];
+					String query = "SELECT * FROM movies WHERE movies.title = 'Toy Story'";
+		//		String query = "SELECT * FROM credits, actors WHERE credits.id_actor = actors.id_actor AND actors.id_actor = '550027'"; //OK
+		//		String query = "SELECT * FROM moviecredits, Movie WHERE moviecredits.id_movie = Movie.id_movie AND Movie.id_movie = 862"; //OK
+		//		String query = "SELECT * FROM moviecredits, Movie WHERE moviecredits.id_movie = Movie.id_movie"; // OK
+		//		String query = "SELECT movies.title FROM Movie, movies WHERE Movie.id_movie = movies.id_movie"; // OK
+		//		String query = "SELECT * FROM Movie, movies WHERE Movie.id_movie = movies.id_movie AND movies.id_movie = '862'"; //OK
+		//		String query = "SELECT * FROM Movie, movies WHERE Movie.id_movie = movies.id_movie AND movies.title = 'Toy Story'"; //OK
+		//		String query = "MATCH (Movie : Movie)--(movies : movies) WHERE Movie.id_movie = movies.id_movie AND  movies.title = 'Toy Story'"; //OK
+		//		
+		//		String query = "SELECT * FROM moviecredits, Movie, movies WHERE moviecredits.id_movie = Movie.id_movie AND Movie.id_movie = movies.id_movie AND movies.title = 'Toy Story'";
+		//				String query = "SELECT movies.title, actors.name, movies.id_movie FROM moviecredits, credits, actors, Movie, movies WHERE moviecredits.id_movie = Movie.id_movie AND Movie.id_movie = movies.id_movie AND moviecredits.id_credit = credits.id_credit AND credits.id_actor = actors.id_actor AND actors.name = 'Tom Hanks'"; //OK
+		//				String query = "SELECT * FROM moviecredits, credits, actors, Movie, movies WHERE moviecredits.id_movie = Movie.id_movie AND Movie.id_movie = movies.id_movie AND movies.title = 'Toy Story' AND moviecredits.id_credit = credits.id_credit AND credits.id_actor = actors.id_actor AND actors.name = 'Tom Hanks'";
+		//				String query = "SELECT * FROM Review, Movie, movies WHERE Review.id_movie = Movie.id_movie AND Movie.id_movie = movies.id_movie AND movies.title = 'Toy Story'"; //OK
+		new Polystore().run(query);
 		//		String query = "SELECT * FROM film";
-//		String query = "SELECT * FROM staff, address WHERE address.address_id = staff.address_id";
-		//	String query = "SELECT * FROM rental, inventory WHERE rental.inventory_id = inventory.inventory_id";
+		//		String query = "SELECT * FROM staff, address WHERE address.address_id = staff.address_id";
+		//  	String query = "SELECT * FROM rental, inventory WHERE rental.inventory_id = inventory.inventory_id";
 		//		String query = "SELECT * FROM rental, inventory, customer WHERE rental.inventory_id = inventory.inventory_id AND rental.customer_id = customer.customer_id";
 
 		//		String query = "SELECT customer.first_name, customer.last_name, rental.rental_id, inventory.inventory_id FROM inventory, rental, customer, address, city WHERE rental.inventory_id = inventory.inventory_id AND city.city = 'Lens' AND address.city_id = city.city_id AND rental.customer_id = customer.customer_id AND address.address_id = customer.address_id";
-		//				String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
+		//		String query = "SELECT inventory.film_id, customer.address_id, address.address FROM rental, payment, customer, address, city, country, inventory WHERE inventory.inventory_id = rental.inventory_id AND rental.customer_id = customer.customer_id AND customer.address_id = address.address_id AND city.city_id = address.city_id AND rental.payment_id = payment.payment_id AND country.country_id = city.country_id";
 		//		String query = "SELECT * FROM language WHERE language.name = 'Tswana'";
 		//		String query = "SELECT city.city_id FROM city WHERE city.city = 'Lens'";
 		//		String query = "SELECT language.name FROM language WHERE language.name = 'Mongolian'";
@@ -147,6 +185,11 @@ public class Polystore {
 		//				String query = "db.store.find({'store.store_id'= 1})";
 		//		String query = "MATCH (payment: payment)--(rental: rental) WHERE payment.rental_id = rental.rental_id AND payment.amount = 44.79 RETURN payment.payment_date";
 		//		String query = "MATCH (rental: rental)--(customer: customer)--(address: address) WHERE rental.customer_id = customer.customer_id AND customer.address_id = address.address_id";
-		new Polystore().run(query);
+
+	}
+
+	private static String lettoreQuery() {
+	
+		return null;
 	}
 }

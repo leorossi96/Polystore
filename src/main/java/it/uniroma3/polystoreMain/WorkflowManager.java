@@ -121,7 +121,7 @@ public class WorkflowManager {
 				JsonArray risultati = mappaRisultati.get(nodoPath);
 				for(JsonElement je : risultati){
 					JsonObject jo = je.getAsJsonObject();
-					String pk = jsonUtili.get(nextNodoPath).get("primarykey").getAsString().split("\\.")[1];
+					String pk = jsonUtili.get(nextNodoPath.get(0)).get("primarykey").getAsString().split("\\.")[1];
 					fkUtili.add(jo.get(pk).getAsString());
 				}
 				if(fkUtili.isEmpty())	{
