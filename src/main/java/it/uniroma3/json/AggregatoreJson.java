@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -41,7 +40,7 @@ public class AggregatoreJson {
 					.read()
 					.json(path)
 					.drop("_corrupt_record") // cancella le colonne della tabella: create in caso di 
-					.drop("last_update"); // no join con last update perchè altrimenti il join lo fa su quello
+					.drop("value"); // no join con last update perchè altrimenti il join lo fa su quello
 			datasetList.add(datasetTemp);
 		}
 		this.joinDataset(datasetList, requiredColumns);
@@ -82,25 +81,27 @@ public class AggregatoreJson {
 				return;
 			}
 		}
-		try {
-			if(datasetList.isEmpty()) {//continuo fino a che non ho joinato tutte le tabelle
-				List<String> datasetColums = this.getColumns(dataset);
-				for(String name : datasetColums) {
-					if(!requiredColumns.contains(name)) {
-						dataset.drop(name);
-					}
+		//		try {
+		if(datasetList.isEmpty()) {//continuo fino a che non ho joinato tutte le tabelle
+			List<String> datasetColums = this.getColumns(dataset);
+			for(String name : datasetColums) {
+				if(!requiredColumns.contains(name)) {
+					dataset.drop(name);
 				}
-				dataset
-				.write()
-				.format("json")
-				.save(PATH +"/ris");
 			}
-		}
-		catch (Exception e) { //se qualcosa non va e ho un'eccezione me lo salvo su txt per non perdere i dati 
 			dataset
-			.toJavaRDD()
-			.saveAsTextFile(PATH +"/ris");
+			.coalesce(1)
+			.write()
+			.format("com.databricks.spark.csv")
+			.option("header", "true")
+			.save(PATH +"/ris");
 		}
+		//		}
+		//		catch (Exception e) { //se qualcosa non va e ho un'eccezione me lo salvo su txt per non perdere i dati 
+		//			dataset
+		//			.toJavaRDD()
+		//			.saveAsTextFile(PATH +"/ris");
+		//		}
 		return;
 	}
 

@@ -1,5 +1,6 @@
 package it.uniroma3.costruttoreQuery;
 
+import java.io.StringReader;
 import java.sql.ResultSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -13,6 +14,9 @@ import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.stream.JsonReader;
 
 import it.uniroma3.json.Convertitore;
 import it.uniroma3.json.ResultCleaner;
@@ -74,7 +78,20 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 
 		int i = 0; //contatore di risultati con cui fare join
 		for(DefaultWeightedEdge arco : grafoPrioritaCompatto.outgoingEdgesOf(nodo)){
-			JsonArray risFiglio = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
+			JsonArray risFiglio1 = mappaRisultati.get(grafoPrioritaCompatto.getEdgeTarget(arco));
+			JsonElement temp;
+			JsonArray risFiglio = new JsonArray();
+			for(int j = 0; j<risFiglio1.size();j++) {
+
+				temp = risFiglio1.get(j);
+				String s = temp.toString().split(":")[1].replaceAll("\"", "").replaceAll("}", "");
+				float a = Float.parseFloat(s);
+				String s1 = temp.toString().split(":")[0] + ":\"" + (int)a +"\"}";
+				JsonReader jreader = new JsonReader(new StringReader(s1));
+				jreader.setLenient(true);
+				JsonElement el = new JsonParser().parse(jreader);
+				risFiglio.add(el);
+			}
 			mappaRisultati.remove(grafoPrioritaCompatto.getEdgeTarget(arco));
 			queryRiscritta.append("json_array_elements('"+risFiglio+"') AS elem"+i+",\n");
 			i++;
@@ -108,7 +125,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query SQL " + elapsedTime/1000.0);
-//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
+		//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 
 	@Override
@@ -117,7 +134,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 			Map<List<String>, JsonArray> mappaRisultati, Map<String, JsonObject> jsonUtili) throws Exception{
 
 		final long startTime = System.currentTimeMillis();
-		
+
 		String pkNextNodoPath = jsonUtili.get(nextNodoPath).get("primarykey").getAsString().split("\\.")[1];
 
 		StringBuilder queryProiezione = new StringBuilder();
@@ -172,7 +189,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		}
 		if(fkUtili!=null)
 			queryProiezione.append("AND "+nextNodoPath.get(0)+"."+pkNextNodoPath+" IN "+fkUtili.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");	
-		
+
 		else{ //mi trovo nella radice nella seconda fase dell'esecuzione
 			for(String tabella: nextNodoPath){
 				String fkTabella = jsonUtili.get(tabella).get("primarykey").getAsString().split("\\.")[1];
@@ -181,7 +198,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 					JsonObject jo = je.getAsJsonObject();
 					fkUtiliCampoRadice.add(jo.get(tabella+"_id").getAsString());
 				}
-					queryProiezione.append("AND "+tabella+"."+fkTabella+" IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
+				queryProiezione.append("AND "+tabella+"."+fkTabella+" IN "+fkUtiliCampoRadice.toString().replaceAll(Pattern.quote("["), "(").replaceAll(Pattern.quote("]"), ")")+"\n");
 			}
 		}
 		String query = queryProiezione.toString();
@@ -191,7 +208,7 @@ public class CostruttoreQuerySQL extends CostruttoreQuery{
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
 		final long elapsedTime = System.currentTimeMillis() - startTime;
 		System.out.println("Tempo impiegato query SQL " + elapsedTime/1000.0);
-//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
+		//		System.out.println("RISULTATO INSERITO NELLA MAPPARISULTATI: "+ risutatiFormaCorretta.toString());
 	}
 
 	private JsonArray eseguiQueryDirettamente(String query) throws Exception{

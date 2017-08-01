@@ -59,6 +59,22 @@
      </FIELD>
 
      <FIELD>
+        <semanticFieldName>tmdb.tmdb."movieKeywords"."id_movie"</semanticFieldName>
+        <fieldName>"id_movie"</fieldName>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>10</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>6</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
         <semanticFieldName>name</semanticFieldName>
         <fieldName>"name"</fieldName>
         <dataType>12</dataType>
@@ -101,14 +117,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."_id"</semanticFieldName>
         <fieldName>"_id"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
-        <fieldSize>16793600</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>16793600</characterOctetLength>
+        <characterOctetLength>10</characterOctetLength>
         <ordinalPosition>1</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -125,7 +141,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>35</ordinalPosition>
+        <ordinalPosition>39</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -149,6 +165,70 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection"</semanticFieldName>
         <fieldName>"belongs_to_collection"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>37</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.backdrop_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.backdrop_path"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>30</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.id"</semanticFieldName>
+        <fieldName>"belongs_to_collection.id"</fieldName>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>10</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>32</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.name"</semanticFieldName>
+        <fieldName>"belongs_to_collection.name"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>31</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.poster_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.poster_path"</fieldName>
         <dataType>12</dataType>
         <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
@@ -189,7 +269,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>36</ordinalPosition>
+        <ordinalPosition>40</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -205,7 +285,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>10</characterOctetLength>
-        <ordinalPosition>24</ordinalPosition>
+        <ordinalPosition>28</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "genres.id"</properties>
@@ -222,7 +302,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>38</ordinalPosition>
+        <ordinalPosition>42</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -254,7 +334,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>23</ordinalPosition>
+        <ordinalPosition>27</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "genres.name"</properties>
@@ -351,7 +431,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>31</ordinalPosition>
+        <ordinalPosition>35</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -399,7 +479,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>37</ordinalPosition>
+        <ordinalPosition>41</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -415,7 +495,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>34</ordinalPosition>
+        <ordinalPosition>38</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -455,15 +535,15 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>8</dataType>
-        <dataTypeName>double</dataTypeName>
-        <fieldSize>20</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>21</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>20</characterOctetLength>
-        <ordinalPosition>32</ordinalPosition>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>36</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -510,14 +590,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."_id"</semanticFieldName>
         <fieldName>"_id"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
-        <fieldSize>16793600</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>16793600</characterOctetLength>
+        <characterOctetLength>10</characterOctetLength>
         <ordinalPosition>1</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -534,7 +614,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>35</ordinalPosition>
+        <ordinalPosition>39</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -558,6 +638,70 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection"</semanticFieldName>
         <fieldName>"belongs_to_collection"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>37</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.backdrop_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.backdrop_path"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>30</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.id"</semanticFieldName>
+        <fieldName>"belongs_to_collection.id"</fieldName>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>10</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>32</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.name"</semanticFieldName>
+        <fieldName>"belongs_to_collection.name"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>31</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.poster_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.poster_path"</fieldName>
         <dataType>12</dataType>
         <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
@@ -598,7 +742,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>36</ordinalPosition>
+        <ordinalPosition>40</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -614,7 +758,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>10</characterOctetLength>
-        <ordinalPosition>24</ordinalPosition>
+        <ordinalPosition>28</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "production_companies.id"</properties>
@@ -631,7 +775,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>38</ordinalPosition>
+        <ordinalPosition>42</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -663,7 +807,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>23</ordinalPosition>
+        <ordinalPosition>27</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "production_companies.name"</properties>
@@ -760,7 +904,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>31</ordinalPosition>
+        <ordinalPosition>35</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -808,7 +952,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>37</ordinalPosition>
+        <ordinalPosition>41</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -824,7 +968,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>34</ordinalPosition>
+        <ordinalPosition>38</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -864,15 +1008,15 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>8</dataType>
-        <dataTypeName>double</dataTypeName>
-        <fieldSize>20</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>21</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>20</characterOctetLength>
-        <ordinalPosition>32</ordinalPosition>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>36</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -919,14 +1063,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."_id"</semanticFieldName>
         <fieldName>"_id"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
-        <fieldSize>16793600</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>16793600</characterOctetLength>
+        <characterOctetLength>10</characterOctetLength>
         <ordinalPosition>1</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -943,7 +1087,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>35</ordinalPosition>
+        <ordinalPosition>39</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -967,6 +1111,70 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection"</semanticFieldName>
         <fieldName>"belongs_to_collection"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>37</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.backdrop_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.backdrop_path"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>30</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.id"</semanticFieldName>
+        <fieldName>"belongs_to_collection.id"</fieldName>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>10</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>32</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.name"</semanticFieldName>
+        <fieldName>"belongs_to_collection.name"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>31</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.poster_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.poster_path"</fieldName>
         <dataType>12</dataType>
         <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
@@ -1007,7 +1215,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>36</ordinalPosition>
+        <ordinalPosition>40</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1023,7 +1231,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>38</ordinalPosition>
+        <ordinalPosition>42</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1055,7 +1263,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>23</ordinalPosition>
+        <ordinalPosition>27</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "production_countries.iso_3166_1"</properties>
@@ -1072,7 +1280,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>24</ordinalPosition>
+        <ordinalPosition>28</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "production_countries.name"</properties>
@@ -1169,7 +1377,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>31</ordinalPosition>
+        <ordinalPosition>35</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1217,7 +1425,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>37</ordinalPosition>
+        <ordinalPosition>41</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1233,7 +1441,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>34</ordinalPosition>
+        <ordinalPosition>38</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1273,15 +1481,15 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>8</dataType>
-        <dataTypeName>double</dataTypeName>
-        <fieldSize>20</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>21</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>20</characterOctetLength>
-        <ordinalPosition>32</ordinalPosition>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>36</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1328,14 +1536,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."_id"</semanticFieldName>
         <fieldName>"_id"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
-        <fieldSize>16793600</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>16793600</characterOctetLength>
+        <characterOctetLength>10</characterOctetLength>
         <ordinalPosition>1</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -1352,7 +1560,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>35</ordinalPosition>
+        <ordinalPosition>39</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1376,6 +1584,70 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection"</semanticFieldName>
         <fieldName>"belongs_to_collection"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>37</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.backdrop_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.backdrop_path"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>30</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.id"</semanticFieldName>
+        <fieldName>"belongs_to_collection.id"</fieldName>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>10</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>32</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.name"</semanticFieldName>
+        <fieldName>"belongs_to_collection.name"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>31</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>tmdb.tmdb."movies"."belongs_to_collection.poster_path"</semanticFieldName>
+        <fieldName>"belongs_to_collection.poster_path"</fieldName>
         <dataType>12</dataType>
         <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
@@ -1416,7 +1688,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>36</ordinalPosition>
+        <ordinalPosition>40</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1432,7 +1704,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>38</ordinalPosition>
+        <ordinalPosition>42</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1464,7 +1736,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>24</ordinalPosition>
+        <ordinalPosition>28</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "spoken_languages.iso_639_1"</properties>
@@ -1481,7 +1753,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>23</ordinalPosition>
+        <ordinalPosition>27</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
         <properties>"systemname" : "spoken_languages.name"</properties>
@@ -1578,7 +1850,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>31</ordinalPosition>
+        <ordinalPosition>35</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1626,7 +1898,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>37</ordinalPosition>
+        <ordinalPosition>41</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1642,7 +1914,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>34</ordinalPosition>
+        <ordinalPosition>38</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1682,15 +1954,15 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>8</dataType>
-        <dataTypeName>double</dataTypeName>
-        <fieldSize>20</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>21</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>20</characterOctetLength>
-        <ordinalPosition>32</ordinalPosition>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>36</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1732,7 +2004,7 @@
         <catalogName></catalogName>
         <caseSensitive>true</caseSensitive>
         <comment></comment>
-        <numTuples>2000</numTuples>
+        <numTuples>39694</numTuples>
      <FIELD>
         <semanticFieldName>_id</semanticFieldName>
         <fieldName>"_id"</fieldName>
@@ -1750,8 +2022,8 @@
      </FIELD>
 
      <FIELD>
-        <semanticFieldName>id</semanticFieldName>
-        <fieldName>"id"</fieldName>
+        <semanticFieldName>id_movie</semanticFieldName>
+        <fieldName>"id_movie"</fieldName>
         <dataType>4</dataType>
         <dataTypeName>integer</dataTypeName>
         <fieldSize>10</fieldSize>
@@ -1784,8 +2056,8 @@
      <FIELD>
         <semanticFieldName>keywords.[0-2147483647]</semanticFieldName>
         <fieldName>"keywords.[0-2147483647]"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
+        <dataType>-2000</dataType>
+        <dataTypeName>hashmap/JSON</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
@@ -1846,18 +2118,18 @@
         <catalogName></catalogName>
         <caseSensitive>true</caseSensitive>
         <comment></comment>
-        <numTuples>3000</numTuples>
+        <numTuples>39694</numTuples>
      <FIELD>
         <semanticFieldName>_id</semanticFieldName>
         <fieldName>"_id"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
-        <fieldSize>16793600</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>16793600</characterOctetLength>
+        <characterOctetLength>10</characterOctetLength>
         <ordinalPosition>1</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -1874,7 +2146,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>35</ordinalPosition>
+        <ordinalPosition>39</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -1898,6 +2170,70 @@
      <FIELD>
         <semanticFieldName>belongs_to_collection</semanticFieldName>
         <fieldName>"belongs_to_collection"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>37</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>belongs_to_collection.backdrop_path</semanticFieldName>
+        <fieldName>"belongs_to_collection.backdrop_path"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>30</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>belongs_to_collection.id</semanticFieldName>
+        <fieldName>"belongs_to_collection.id"</fieldName>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>10</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>32</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>belongs_to_collection.name</semanticFieldName>
+        <fieldName>"belongs_to_collection.name"</fieldName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
+        <fieldSize>16793600</fieldSize>
+        <decimalDigits>0</decimalDigits>
+        <numberRadixPrecision>16793600</numberRadixPrecision>
+        <remarks></remarks>
+        <defaultValue></defaultValue>
+        <characterOctetLength>16793600</characterOctetLength>
+        <ordinalPosition>31</ordinalPosition>
+        <isNullable></isNullable>
+        <numDistinctValues>0</numDistinctValues>
+     </FIELD>
+
+     <FIELD>
+        <semanticFieldName>belongs_to_collection.poster_path</semanticFieldName>
+        <fieldName>"belongs_to_collection.poster_path"</fieldName>
         <dataType>12</dataType>
         <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
@@ -2002,7 +2338,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>36</ordinalPosition>
+        <ordinalPosition>40</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -2018,7 +2354,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>38</ordinalPosition>
+        <ordinalPosition>42</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -2138,15 +2474,15 @@
      <FIELD>
         <semanticFieldName>production_companies.[0-2147483647]</semanticFieldName>
         <fieldName>"production_companies.[0-2147483647]"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
+        <dataType>-2000</dataType>
+        <dataTypeName>hashmap/JSON</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>30</ordinalPosition>
+        <ordinalPosition>34</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -2202,8 +2538,8 @@
      <FIELD>
         <semanticFieldName>production_countries.[0-2147483647]</semanticFieldName>
         <fieldName>"production_countries.[0-2147483647]"</fieldName>
-        <dataType>12</dataType>
-        <dataTypeName>varchar</dataTypeName>
+        <dataType>-2000</dataType>
+        <dataTypeName>hashmap/JSON</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
@@ -2258,7 +2594,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>31</ordinalPosition>
+        <ordinalPosition>35</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -2370,7 +2706,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>37</ordinalPosition>
+        <ordinalPosition>41</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -2386,7 +2722,7 @@
         <remarks></remarks>
         <defaultValue></defaultValue>
         <characterOctetLength>16793600</characterOctetLength>
-        <ordinalPosition>34</ordinalPosition>
+        <ordinalPosition>38</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
@@ -2426,15 +2762,15 @@
      <FIELD>
         <semanticFieldName>vote_average</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>8</dataType>
-        <dataTypeName>double</dataTypeName>
-        <fieldSize>20</fieldSize>
+        <dataType>4</dataType>
+        <dataTypeName>integer</dataTypeName>
+        <fieldSize>10</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>21</numberRadixPrecision>
+        <numberRadixPrecision>10</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>20</characterOctetLength>
-        <ordinalPosition>32</ordinalPosition>
+        <characterOctetLength>10</characterOctetLength>
+        <ordinalPosition>36</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
      </FIELD>
