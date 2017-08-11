@@ -82,7 +82,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		}
 
 		String queryMongo = queryRiscritta.toString();
-		System.out.println("QUERY MONGO ="+queryMongo+"\n");
+		System.out.println("QUERY MONGO =\n");
 		JsonArray risultati = eseguiQueryDirettamente(queryMongo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
@@ -173,7 +173,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE MONGO ="+queryProiezione+"\n");
+		System.out.println("\nQUERY PROIEZIONE MONGO =\n");
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);

@@ -2,6 +2,7 @@ package it.uniroma3.polystoreMain;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,6 +17,10 @@ import java.util.Properties;
 
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -59,7 +64,7 @@ public class Polystore {
 		return parser;
 	}
 
-	private void effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaSelect, Map<String, JsonObject> jsonUtili) throws IOException {
+	private org.json.simple.JSONArray effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaSelect, Map<String, JsonObject> jsonUtili) throws IOException, ParseException {
 		PATH = percorsoFileRisultato();
 		List<String> paths = new LinkedList<>();
 		JsonWriter writer = new JsonWriter();
@@ -88,18 +93,21 @@ public class Polystore {
 		}
 		if(paths.size() == 1) {
 
-			/*Nel caso di un solo risultato non c'è bisogno di invocare AggregatoreJson*/
-			Path source = Paths.get(paths.get(0));
-			File target = new File(PATH + "/risultati.json"); //TODO rendere parametrico insieme a quello di spark
-			if(!target.exists())
-				target.createNewFile();
-			OutputStream fos = new FileOutputStream(target);
-			Files.copy(source, fos);
-			return;
+//			/*Nel caso di un solo risultato non c'è bisogno di invocare AggregatoreJson*/
+//			Path source = Paths.get(paths.get(0));
+//			File target = new File(PATH + "/risultati.json"); //TODO rendere parametrico insieme a quello di spark
+//			if(!target.exists())
+//				target.createNewFile();
+//			OutputStream fos = new FileOutputStream(target);
+//			Files.copy(source, fos);
+			JSONParser parser = new JSONParser();
+			org.json.simple.JSONArray jsonObject = (org.json.simple.JSONArray) parser.parse(new FileReader(paths.get(0)));
+			return jsonObject;
 		}
 		System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOO\n"+requiredColumns);
 		AggregatoreJson aggregatore = new AggregatoreJson();
 		aggregatore.join(paths, requiredColumns);
+		return null;
 	}
 
 	private String percorsoFileRisultato() throws IOException{
@@ -110,9 +118,9 @@ public class Polystore {
 		return props.getProperty("PATH");
 	}
 
-	public void run(String query) throws Exception {
+	public org.json.simple.JSONArray run(String query) throws Exception {
 
-		QueryParser parser = this.getParser(query);	
+		QueryParser parser = new ParserSql();//this.getParser(query);	
 		parser.spezza(query);
 		FabbricatoreMappaStatement fabbricatoreMappe = new FabbricatoreMappaStatement();
 		List<String> listaProiezioni = parser.getListaProiezioni();
@@ -147,17 +155,22 @@ public class Polystore {
 		System.out.println("FINITO");
 		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere, jsonUtili);
 		final long startTime = System.currentTimeMillis();
-		this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect, jsonUtili);
-		final long elapsedTime = System.currentTimeMillis() - startTime;
-		System.out.println("TEMPO AGGREGAZIONE = "+ elapsedTime/ 1000.0);
+		return this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect, jsonUtili);
+//		final long elapsedTime = System.currentTimeMillis() - startTime;
+//		System.out.println("TEMPO AGGREGAZIONE = "+ elapsedTime/ 1000.0);
 	}
 
 	public static void main (String[]args) throws Exception{
-		
-		String query = "SELECT * FROM moviecredits, movies WHERE moviecredits.id_movie = movies.id_movie AND movies.id_movie = '141423'";
-		
+		//String query = "SELECT * FROM moviecredits, credits WHERE moviecredits.id_credit = credits.id_credit";
+		//String query = "SELECT * FROM moviecredits, movies WHERE moviecredits.id_movie = movies.id_movie AND movies.id_movie = '141423'";
+		//String query = "SELECT * FROM movies, moviecredits, credits WHERE moviecredits.id_movie = movies.id_movie AND moviecredits.id_credit = credits.id_credit AND movies.id_movie = '141423'";
+		String query = "SELECT * FROM moviecredits, credits WHERE moviecredits.id_credit = credits.id_credit AND moviecredits.id_movie = '141423'";
 		new Polystore().run(query);
 
+	}
+	
+	public org.json.simple.JSONArray executeQuery(String query) throws Exception {
+		return this.run(query);
 	}
 
 	private static String lettoreQuery() {

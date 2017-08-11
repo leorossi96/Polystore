@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+
 
 public class AggregatoreJson {
 
@@ -92,8 +94,9 @@ public class AggregatoreJson {
 			dataset
 			.coalesce(1)
 			.write()
-			.format("com.databricks.spark.csv")
-			.option("header", "true")
+			.format("json")
+//			.format("com.databricks.spark.csv")
+//			.option("header", "true")
 			.save(PATH +"/ris");
 		}
 		//		}
