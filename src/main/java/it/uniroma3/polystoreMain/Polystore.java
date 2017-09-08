@@ -65,7 +65,7 @@ public class Polystore {
 	}
 
 	private org.json.simple.JSONArray effettuaJoinRisultatoFinale(Map<List<String>, JsonArray> mappaRisultati, Map<String, List<String>> mappaSelect, Map<String, JsonObject> jsonUtili) throws IOException, ParseException {
-		PATH = percorsoFileRisultato();
+//		PATH = percorsoFileRisultato();
 		List<String> paths = new LinkedList<>();
 		JsonWriter writer = new JsonWriter();
 		List<String> requiredColumns = new LinkedList<>();
@@ -110,13 +110,13 @@ public class Polystore {
 		return null;
 	}
 
-	private String percorsoFileRisultato() throws IOException{
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		Properties props = new Properties();
-		InputStream resource = loader.getResourceAsStream(properties);
-		props.load(resource);
-		return props.getProperty("PATH");
-	}
+//	private String percorsoFileRisultato() throws IOException{
+//		ClassLoader loader = Thread.currentThread().getContextClassLoader();
+//		Properties props = new Properties();
+//		InputStream resource = loader.getResourceAsStream(properties);
+//		props.load(resource);
+//		return props.getProperty("PATH");
+//	}
 
 	public org.json.simple.JSONArray run(String query) throws Exception {
 
