@@ -55,7 +55,7 @@ public class WorkflowManager {
 			}
 
 		}
-		System.out.println(listaNodiProiezione.toString());
+//		System.out.println(listaNodiProiezione.toString());
 		Map<List<String>, List<List<String>>> mappaPathNodo = new HashMap<>();
 		List<List<String>> nodiProiettati = new LinkedList<>();
 		for(List<String> n : listaNodiProiezione){
@@ -68,9 +68,9 @@ public class WorkflowManager {
 
 			if(path.size() == 2){
 				List<String> nodoPath = path.get(0);
-				System.out.println(nodoPath);
+//				System.out.println(nodoPath);
 				List<String> nextNodoPath = path.get(1);
-				System.out.println(nextNodoPath);
+//				System.out.println(nextNodoPath);
 				JsonArray risultati = mappaRisultati.get(nodoPath);
 				for(JsonElement je : risultati){
 					JsonObject jo = je.getAsJsonObject();

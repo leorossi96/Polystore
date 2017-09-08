@@ -25,7 +25,7 @@ public class ResultCleaner {
 		while (iterator.hasNext()) {
 			sb.append(iterator.next().toString());
 		}
-		System.out.println("Risultati da Neo4j = \n"+ris);
+//		System.out.println("Risultati da Neo4j = \n"+ris);
 		String risultati = sb.toString();
 		String r = ris.toString();
 //		System.out.println("RISULTATI NEO4J = \n"+ris);

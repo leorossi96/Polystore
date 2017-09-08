@@ -76,7 +76,7 @@ public class Convertitore {
 			}
 			jsonArray.add(obj);
 		}
-		System.out.println("OJKOMOKO:\n"+jsonArray);
+//		System.out.println("OJKOMOKO:\n"+jsonArray);
 		return jsonArray;
 	}
 

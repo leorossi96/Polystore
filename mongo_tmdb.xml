@@ -535,14 +535,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>4</dataType>
-        <dataTypeName>integer</dataTypeName>
-        <fieldSize>10</fieldSize>
+        <dataType>8</dataType>
+        <dataTypeName>double</dataTypeName>
+        <fieldSize>20</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>10</numberRadixPrecision>
+        <numberRadixPrecision>21</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>10</characterOctetLength>
+        <characterOctetLength>20</characterOctetLength>
         <ordinalPosition>32</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -1008,14 +1008,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>4</dataType>
-        <dataTypeName>integer</dataTypeName>
-        <fieldSize>10</fieldSize>
+        <dataType>8</dataType>
+        <dataTypeName>double</dataTypeName>
+        <fieldSize>20</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>10</numberRadixPrecision>
+        <numberRadixPrecision>21</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>10</characterOctetLength>
+        <characterOctetLength>20</characterOctetLength>
         <ordinalPosition>32</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -1481,14 +1481,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>4</dataType>
-        <dataTypeName>integer</dataTypeName>
-        <fieldSize>10</fieldSize>
+        <dataType>8</dataType>
+        <dataTypeName>double</dataTypeName>
+        <fieldSize>20</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>10</numberRadixPrecision>
+        <numberRadixPrecision>21</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>10</characterOctetLength>
+        <characterOctetLength>20</characterOctetLength>
         <ordinalPosition>32</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -1954,14 +1954,14 @@
      <FIELD>
         <semanticFieldName>tmdb.tmdb."movies"."vote_average"</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>4</dataType>
-        <dataTypeName>integer</dataTypeName>
-        <fieldSize>10</fieldSize>
+        <dataType>8</dataType>
+        <dataTypeName>double</dataTypeName>
+        <fieldSize>20</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>10</numberRadixPrecision>
+        <numberRadixPrecision>21</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>10</characterOctetLength>
+        <characterOctetLength>20</characterOctetLength>
         <ordinalPosition>32</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>
@@ -2056,8 +2056,8 @@
      <FIELD>
         <semanticFieldName>keywords.[0-2147483647]</semanticFieldName>
         <fieldName>"keywords.[0-2147483647]"</fieldName>
-        <dataType>-2000</dataType>
-        <dataTypeName>hashmap/JSON</dataTypeName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
@@ -2474,8 +2474,8 @@
      <FIELD>
         <semanticFieldName>production_companies.[0-2147483647]</semanticFieldName>
         <fieldName>"production_companies.[0-2147483647]"</fieldName>
-        <dataType>-2000</dataType>
-        <dataTypeName>hashmap/JSON</dataTypeName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
@@ -2538,8 +2538,8 @@
      <FIELD>
         <semanticFieldName>production_countries.[0-2147483647]</semanticFieldName>
         <fieldName>"production_countries.[0-2147483647]"</fieldName>
-        <dataType>-2000</dataType>
-        <dataTypeName>hashmap/JSON</dataTypeName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
@@ -2650,8 +2650,8 @@
      <FIELD>
         <semanticFieldName>spoken_languages.[0-2147483647]</semanticFieldName>
         <fieldName>"spoken_languages.[0-2147483647]"</fieldName>
-        <dataType>-2000</dataType>
-        <dataTypeName>hashmap/JSON</dataTypeName>
+        <dataType>12</dataType>
+        <dataTypeName>varchar</dataTypeName>
         <fieldSize>16793600</fieldSize>
         <decimalDigits>0</decimalDigits>
         <numberRadixPrecision>16793600</numberRadixPrecision>
@@ -2762,14 +2762,14 @@
      <FIELD>
         <semanticFieldName>vote_average</semanticFieldName>
         <fieldName>"vote_average"</fieldName>
-        <dataType>4</dataType>
-        <dataTypeName>integer</dataTypeName>
-        <fieldSize>10</fieldSize>
+        <dataType>8</dataType>
+        <dataTypeName>double</dataTypeName>
+        <fieldSize>20</fieldSize>
         <decimalDigits>0</decimalDigits>
-        <numberRadixPrecision>10</numberRadixPrecision>
+        <numberRadixPrecision>21</numberRadixPrecision>
         <remarks></remarks>
         <defaultValue></defaultValue>
-        <characterOctetLength>10</characterOctetLength>
+        <characterOctetLength>20</characterOctetLength>
         <ordinalPosition>32</ordinalPosition>
         <isNullable></isNullable>
         <numDistinctValues>0</numDistinctValues>

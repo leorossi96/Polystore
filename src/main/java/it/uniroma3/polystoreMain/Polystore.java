@@ -104,9 +104,9 @@ public class Polystore {
 			org.json.simple.JSONArray jsonObject = (org.json.simple.JSONArray) parser.parse(new FileReader(paths.get(0)));
 			return jsonObject;
 		}
-		System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOO\n"+requiredColumns);
-		AggregatoreJson aggregatore = new AggregatoreJson();
-		aggregatore.join(paths, requiredColumns);
+//		System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOO\n"+requiredColumns);
+//		AggregatoreJson aggregatore = new AggregatoreJson();
+//		aggregatore.join(paths, requiredColumns);
 		return null;
 	}
 
@@ -129,22 +129,22 @@ public class Polystore {
 		CaricatoreJson caricatoreJson = new CaricatoreJson();
 		Map<String, JsonObject> jsonUtili = caricatoreJson.caricaJSON(listaTabelle);
 		Map<String, List<String>> mappaSelect = fabbricatoreMappe.creaMappaSelect(listaProiezioni, jsonUtili);
-		System.out.println("MAPPA SELECT ="+mappaSelect.toString());
-		System.out.println("lista proiezioni = "+listaProiezioni.toString());
+//		System.out.println("MAPPA SELECT ="+mappaSelect.toString());
+//		System.out.println("lista proiezioni = "+listaProiezioni.toString());
 
 		Map<String, List<List<String>>> mappaWhere = fabbricatoreMappe.creaMappaWhere(matriceWhere, jsonUtili);
-		System.out.println("mappaWhere :"+ mappaWhere.toString()+"\n");
+//		System.out.println("mappaWhere :"+ mappaWhere.toString()+"\n");
 
 		Map<String, List<String>> mappaDB = fabbricatoreMappe.getMappaDB(jsonUtili);
-		System.out.println("Mappa DB :"+mappaDB.toString());
+//		System.out.println("Mappa DB :"+mappaDB.toString());
 
 		FabbricatoreAlberoEsecuzione fabbricatoreAlberoEsecuzione = new FabbricatoreAlberoEsecuzione();
 		SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> grafoPriorita = fabbricatoreAlberoEsecuzione.getGrafoPriorita(listaTabelle, mappaWhere); //non pesato per fare testing
-		System.out.println("Grafo Priorità :" + grafoPriorita.toString());
+//		System.out.println("Grafo Priorità :" + grafoPriorita.toString());
 
 
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoPrioritaCompatto = fabbricatoreAlberoEsecuzione.getGrafoPrioritaCompatto(grafoPriorita, jsonUtili, mappaDB);
-		System.out.println("Grafo Priorità Compatto :"+grafoPrioritaCompatto.toString());
+//		System.out.println("Grafo Priorità Compatto :"+grafoPrioritaCompatto.toString());
 
 		SimpleDirectedWeightedGraph<List<String>, DefaultWeightedEdge> grafoCopia = fabbricatoreAlberoEsecuzione.copiaGrafo(grafoPrioritaCompatto);
 
@@ -152,7 +152,7 @@ public class Polystore {
 
 		WorkflowManager workflowManager = new WorkflowManager();
 		workflowManager.esegui(grafoPrioritaCompatto, grafoCopia, grafoPriorita, jsonUtili, mappaWhere, mappaSelect, mappaRisultati);
-		System.out.println("FINITO");
+//		System.out.println("FINITO");
 		workflowManager.eseguiProiezioni(grafoPrioritaCompatto, mappaSelect, mappaRisultati, mappaDB, mappaWhere, jsonUtili);
 		final long startTime = System.currentTimeMillis();
 		return this.effettuaJoinRisultatoFinale(mappaRisultati, mappaSelect, jsonUtili);
@@ -163,8 +163,8 @@ public class Polystore {
 	public static void main (String[]args) throws Exception{
 		//String query = "SELECT * FROM moviecredits, credits WHERE moviecredits.id_credit = credits.id_credit";
 		//String query = "SELECT * FROM moviecredits, movies WHERE moviecredits.id_movie = movies.id_movie AND movies.id_movie = '141423'";
-		//String query = "SELECT * FROM movies, moviecredits, credits WHERE moviecredits.id_movie = movies.id_movie AND moviecredits.id_credit = credits.id_credit AND movies.id_movie = '141423'";
-		String query = "SELECT * FROM moviecredits, credits WHERE moviecredits.id_credit = credits.id_credit AND moviecredits.id_movie = '141423'";
+		String query = "SELECT * FROM movies, moviecredits, credits WHERE moviecredits.id_movie = movies.id_movie AND moviecredits.id_credit = credits.id_credit AND movies.id_movie = '141423'";
+		//String query = "SELECT * FROM moviecredits, credits WHERE moviecredits.id_credit = credits.id_credit AND moviecredits.id_movie = '141423'";
 		new Polystore().run(query);
 
 	}

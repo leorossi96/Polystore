@@ -82,7 +82,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 		}
 
 		String queryMongo = queryRiscritta.toString();
-		System.out.println("QUERY MONGO =\n");
+		System.out.println("QUERY MONGO");
 		JsonArray risultati = eseguiQueryDirettamente(queryMongo);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromMongo(risultati);
 		mappaRisultati.put(nodo, risutatiFormaCorretta);
@@ -137,7 +137,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 					queryProiezione.append(campiDaSelezionareDelNodo.get(i)+", ");
 				}
 				queryProiezione.append(campiDaSelezionareDelNodo.get(campiDaSelezionareDelNodo.size()-1)+"\nFROM\n");
-				System.out.println("QUERYPROIEZIONE");
+				
 			}
 		}
 
@@ -173,7 +173,7 @@ public class CostruttoreQueryMongo extends CostruttoreQuery {
 			}
 		}
 		String query = queryProiezione.toString();
-		System.out.println("\nQUERY PROIEZIONE MONGO =\n");
+		System.out.println("QUERY PROIEZIONE MONGO");
 		JsonArray risultati = eseguiQueryDirettamente(query);
 		JsonArray risutatiFormaCorretta = ResultCleaner.fromSQL(risultati);
 		mappaRisultati.put(nextNodoPath, risutatiFormaCorretta);
